@@ -7,6 +7,7 @@
 
 html {
   overflow-x: hidden;
+  overflow-y: hidden;
   width: 100vw;
 }
 
@@ -54,9 +55,20 @@ body {
   -webkit-transition: all 0.25s;
 }
 
+#logo {
+  top: 10vh;
+  font-size: 150px !important;
+}
+
+#logo-motto {
+  top: 15vh;
+  font-size: 30px !important;
+  color: grey !important;
+}
+
 #replay:hover {
   border: 10px solid #fff;
-  top: 210px;
+  top: 400px !important;
 }
 
 #replay {
@@ -67,11 +79,22 @@ body {
   right: 0;
   margin-right: auto;
   margin-left: auto;
-  top: 110px;
+  top: 410px !important;
+}
+
+#warning {
+  color: red !important;
+  top: 40vh !important;
+  font-size: 50px !important;
+  opacity: 0;
+}
+
+#warning.shown {
+  opacity: 1;
 }
 
 #score {
-  margin-top: 60vh;
+  margin-top: 40vh;
   font-size: 30px !important;
   opacity: 0.75;
 }
@@ -261,7 +284,7 @@ h1 {
   color: #DDDDDD;
 }
 
-#type-upper, #math-upper {
+#type-upper, #add-upper, #mult-upper, #remember-upper {
   font-size: 3.5vh;
   position: absolute;
   color: black;
@@ -270,6 +293,24 @@ h1 {
   right: 0;
   margin-left: auto;
   margin-right: auto;
+}
+
+#remember-lower {
+  position: absolute;
+  font-size: 3vh;
+  color: black;
+  top: 15vh;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 1;
+  transition: opacity 0.25s;
+  -webkit-transition: opacity 0.25s;
+}
+
+#remember-time {
+  color: blue;
 }
 
 #type-word {
@@ -288,4 +329,12 @@ h1 {
   color: black;
   font-size: 2.5vh;
   font-weight: 900;
+  opacity: 1;
+  transition: opacity 0.25s;
+  -webkit-transition: opacity 0.25s;
+}
+
+.hidden {
+  opacity: 0 !important;
+  pointer-events: none;
 }

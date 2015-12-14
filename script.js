@@ -36,6 +36,7 @@ var Frame = function(num, desc, time, active) {
 
 var lose = function() {
   gameActive = false;
+  $("#replay").html("replay");
   setTimeout(function() {
     $("#menu").addClass("shown");
     for(i = 0; i < 16; i++) {
@@ -55,6 +56,8 @@ var start = function() {
   enable(0);
   enable(1);
   enable(2);
+  enable(3);
+  enable(4);
   timeInterval = setInterval(function() {updateTimes()}, 10);
   shuffle();
 
@@ -62,7 +65,13 @@ var start = function() {
   chooseWord();
 
   //Addition game
-  chooseEquation();
+  chooseAddition();
+
+  //Multiplaction game
+  chooseMult();
+
+  //Remember game
+  initRemember();
 }
 
 var resetTime = function(whichFrame) {
@@ -137,29 +146,117 @@ var submitWord = function() {
 }
 
 //math
-var currAnswer
-var chooseEquation = function() {
+var currAdd
+var chooseAddition = function() {
   var num1 = Math.floor(Math.random()*50);
   var num2 = Math.floor(Math.random()*50);
-  currAnswer = num1 + num2;
-  $("#math-upper").html(num1 + " + " + num2);
+  currAdd = num1 + num2;
+  $("#add-upper").html(num1 + " + " + num2);
 }
-var submitEquation = function() {
-  var userAnswer = $("input[name='math-input']").val();
-  $("input[name='math-input']").val("");
-  if(parseInt(userAnswer) === currAnswer) {
+var submitAddition = function() {
+  var userAdd = $("input[name='add-input']").val();
+  $("input[name='add-input']").val("");
+  if(parseInt(userAdd) === currAdd) {
     resetTime(2);
-    chooseEquation();
+    chooseAddition();
   }
   else {
     removeTime(2);
   }
 }
 
+var currMult
+var chooseMult = function() {
+  var num1 = Math.floor(Math.random()*15);
+  var num2 = Math.floor(Math.random()*15);
+  currMult = num1 * num2;
+  $("#mult-upper").html(num1 + " * " + num2);
+}
+var submitMult = function() {
+  var userMult = $("input[name='mult-input']").val();
+  $("input[name='mult-input']").val("");
+  if(parseInt(userMult) === currMult) {
+    resetTime(3);
+    chooseMult();
+  }
+  else {
+    removeTime(3);
+  }
+}
+
+//remember game
+var currRemember, userRemember, rememberTime, rememberTimeUpdater;
+var chars = "ABCDEFG";
+var rememberPhase = 0;
+
+var generateRandomString = function(len) {
+  var finalString = "";
+  for(i = 0; i < len; i++) {
+    finalString += chars[Math.floor(Math.random()*chars.length)];
+  }
+  return finalString;
+}
+
+var initRemember = function() {
+  rememberPhase = 1;
+  currRemember = generateRandomString(3);
+  $("#remember-upper").html("Remember: " + currRemember);
+  $("#remember-lower").removeClass("hidden");
+  $("#remember-input").addClass("hidden");
+  clearInterval(rememberTimeUpdater);
+  $("#remember-time").html("5s");
+  rememberTime = 5;
+  rememberTimeUpdater = setInterval(function() {
+    rememberTime -= 1;
+    $("#remember-time").html(rememberTime + "s");
+    if(rememberTime < 0) {
+      rememberSecondPhase();
+    }
+  }, 1000);
+}
+
+var rememberSecondPhase = function() {
+  rememberPhase = 2;
+  $("#remember-upper").html("Type it in!");
+  $("#remember-lower").addClass("hidden");
+  $("#remember-input").removeClass("hidden");
+  clearInterval(rememberTimeUpdater);
+}
+
+var submitRemember = function() {
+  if(rememberPhase === 2) {
+    userRemember = $("input[name='remember-input']").val();
+    $("input[name='remember-input']").val("");
+  }
+  if(userRemember.toUpperCase() === currRemember) {
+    resetTime(4);
+    initRemember();
+  }
+  else {
+    removeTime(4);
+  }
+}
+
+var choose;
+var screenValid = true;
+
+var testScreen = function() {
+  var height = window.innerHeight;
+  var width = window.innerWidth;
+  if(width <= height*1.33) {
+    $("#warning").addClass("shown");
+    screenValid = false;
+  }
+  else {
+    $("#warning").removeClass("shown");
+    screenValid = true;
+  }
+}
+
 
 $(document).ready(function() {
   for(i = 0; i < 16; i++) {
-    frames[i] = new Frame(i, "idk", Math.floor(Math.random()*30 + 10), false);
+    frames[i] = new Frame(i, "idk", Math.floor(Math.random()*20 + 10), false);
   }
   for(i = 0; i < 16; i++) {
     $("#frame" + i + " > .frame-inner").append("<div class='timer' id='timer" + i
@@ -171,14 +268,26 @@ $(document).ready(function() {
     start();
   });
 
+  $(window).resize(function() {
+    testScreen();
+  });
+
+  testScreen();
+
   $(document).keypress(function(e) {
     if(e.which == 13) {
       e.preventDefault();
       if($("input[name='typing-input']").is(":focus")) {
         submitWord();
       }
-      else if($("input[name='math-input']").is(":focus")) {
-        submitEquation();
+      else if($("input[name='add-input']").is(":focus")) {
+        submitAddition();
+      }
+      else if($("input[name='mult-input']").is(":focus")) {
+        submitMult();
+      }
+      else if($("input[name='remember-input']").is(":focus")) {
+        submitRemember();
       }
     }
   });
