@@ -4,6 +4,39 @@ var gameActive = false;
 var timeInterval;
 var score = 0;
 var totalTime = 0;
+var currLevel = 0;
+var tasksTillNext = 100;
+
+levels = [];
+var Level = function(num, enabled, rememberAmt, maxMult, tasksTillNextLvl) {
+  this.num = num;
+  this.enabled = enabled;
+  this.rememberAmt = rememberAmt;
+  this.maxMult = maxMult;
+  this.tasksTillNext = tasksTillNextLvl;
+  this.activate = function() {
+    for(i = 0; i < enabled.length; i++) {
+      enable(enabled[i]);
+    }
+    currLevel = this.num;
+    tasksTillNext = this.tasksTillNext;
+  }
+}
+
+var frameInits = [
+  function() {void(0)},
+  function() {chooseWord()},
+  function() {chooseAddition()},
+  function() {chooseMult()},
+  function() {initRemember()}
+
+];
+
+levels[0] = new Level(0, [0, 1], 3, 10, 10);
+levels[1] = new Level(1, [2], 3, 10, 15);
+levels[2] = new Level(2, [3], 3, 10, 15);
+levels[3] = new Level(3, [4], 3, 12, 20);
+levels[4] = new Level(4, [], 4, 15, 30);
 
 var Frame = function(num, desc, time, active) {
   this.num = num;
@@ -17,6 +50,15 @@ var Frame = function(num, desc, time, active) {
   this.resetTime = function() {
     var that = this;
     score += 1;
+    console.log(tasksTillNext);
+    tasksTillNext -= 1;
+    if(tasksTillNext === 0) {
+      if(typeof levels[currLevel + 1] != "undefined") {
+        levels[currLevel + 1].activate();
+      } else {
+        tasksTillNext = 999;
+      }
+    }
     this.time = this.origTime;
     $("#frame" + this.num + " .frame-inner").addClass("success");
     setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("success");}, 100);
@@ -41,37 +83,43 @@ var lose = function() {
     $("#menu").addClass("shown");
     for(i = 0; i < 16; i++) {
       disable(i);
-      resetTime(i);
     }
   }, 2000);
   $("#score").html("you accomplished " + score + " tasks in " + parseInt(totalTime) + "s");
   score = 0;
   totalTime = 0;
+  level = 0;
   clearInterval(timeInterval);
 }
 
 var start = function() {
   gameActive = true;
   $("#menu").removeClass("shown");
-  enable(0);
-  enable(1);
-  enable(2);
-  enable(3);
-  enable(4);
   timeInterval = setInterval(function() {updateTimes()}, 10);
   shuffle();
-
-  //Word game
-  chooseWord();
-
-  //Addition game
-  chooseAddition();
-
-  //Multiplaction game
-  chooseMult();
-
-  //Remember game
-  initRemember();
+  tasksTillNext = 100;
+  for(i = 0; i < 16; i++) {
+    frames[i].origTime = Math.floor(Math.random()*20 + 10);
+    frames[i].time = frames[i].origTime;
+    resetTime(i);
+  }
+  currLevel = 0;
+  score = 0;
+  totalTime = 0;
+  level = 0;
+  levels[0].activate();
+  //
+  // //Word game
+  // chooseWord();
+  //
+  // //Addition game
+  // chooseAddition();
+  //
+  // //Multiplaction game
+  // chooseMult();
+  //
+  // //Remember game
+  // initRemember();
 }
 
 var resetTime = function(whichFrame) {
@@ -82,6 +130,7 @@ var removeTime = function(whichFrame) {
 }
 var enable = function(whichFrame) {
   frames[whichFrame].active = true;
+  frameInits[whichFrame]();
   $("#frame" + whichFrame).removeClass("disabled");
 }
 var disable = function(whichFrame) {
@@ -103,6 +152,7 @@ var updateTimes = function() {
         $("#frame" + i).addClass("urgent2");
       }
       else if(frames[i].time < 10) {
+        $("#frame" + i).removeClass("urgent2");
         $("#frame" + i).addClass("urgent1");
       }
       else {
@@ -167,8 +217,8 @@ var submitAddition = function() {
 
 var currMult
 var chooseMult = function() {
-  var num1 = Math.floor(Math.random()*15);
-  var num2 = Math.floor(Math.random()*15);
+  var num1 = Math.floor(Math.random()*levels[currLevel].maxMult);
+  var num2 = Math.floor(Math.random()*levels[currLevel].maxMult);
   currMult = num1 * num2;
   $("#mult-upper").html(num1 + " * " + num2);
 }
@@ -199,7 +249,7 @@ var generateRandomString = function(len) {
 
 var initRemember = function() {
   rememberPhase = 1;
-  currRemember = generateRandomString(3);
+  currRemember = generateRandomString(levels[currLevel].rememberAmt);
   $("#remember-upper").html("Remember: " + currRemember);
   $("#remember-lower").removeClass("hidden");
   $("#remember-input").addClass("hidden");
