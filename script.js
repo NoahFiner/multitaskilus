@@ -8,16 +8,22 @@ var currLevel = 0;
 var tasksTillNext = 100;
 
 levels = [];
-var Level = function(num, enabled, rememberAmt, maxMult, tasksTillNextLvl) {
+var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, tasksTillNextLvl, additionalTime) {
   this.num = num;
   this.enabled = enabled;
   this.rememberAmt = rememberAmt;
   this.maxMult = maxMult;
+  this.maxAdd = maxAdd;
   this.tasksTillNext = tasksTillNextLvl;
+  this.additionalTime = additionalTime;
   this.activate = function() {
     for(i = 0; i < enabled.length; i++) {
       enable(enabled[i]);
     }
+    for(i = 0; i < 16; i++) {
+      frames[i].origTime += additionalTime;
+    }
+    resetAll();
     currLevel = this.num;
     tasksTillNext = this.tasksTillNext;
   }
@@ -28,15 +34,18 @@ var frameInits = [
   function() {chooseWord()},
   function() {chooseAddition()},
   function() {chooseMult()},
-  function() {initRemember()}
+  function() {initRemember()},
+  function() {chooseBword()},
+  function() {chooseColor()}
 
 ];
 
-levels[0] = new Level(0, [0, 1], 3, 10, 10);
-levels[1] = new Level(1, [2], 3, 10, 15);
-levels[2] = new Level(2, [3], 3, 10, 15);
-levels[3] = new Level(3, [4], 3, 12, 20);
-levels[4] = new Level(4, [], 4, 15, 30);
+levels[0] = new Level(0, [0, 1, 6], 3, 10, 10, 10, 0);
+levels[1] = new Level(1, [2], 3, 10, 10, 15, 5);
+levels[2] = new Level(2, [3], 3, 20, 10, 15, 2.5);
+levels[3] = new Level(3, [5], 3, 40, 12, 20, 1);
+levels[4] = new Level(4, [4], 3, 50, 15, 30, 1);
+levels[5] = new Level(4, [], 4, 100, 20, 30, 1);
 
 var Frame = function(num, desc, time, active) {
   this.num = num;
@@ -49,16 +58,6 @@ var Frame = function(num, desc, time, active) {
   }
   this.resetTime = function() {
     var that = this;
-    score += 1;
-    console.log(tasksTillNext);
-    tasksTillNext -= 1;
-    if(tasksTillNext === 0) {
-      if(typeof levels[currLevel + 1] != "undefined") {
-        levels[currLevel + 1].activate();
-      } else {
-        tasksTillNext = 999;
-      }
-    }
     this.time = this.origTime;
     $("#frame" + this.num + " .frame-inner").addClass("success");
     setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("success");}, 100);
@@ -71,6 +70,9 @@ var Frame = function(num, desc, time, active) {
   }
   this.epicFailure = function() {
     var that = this;
+    $('input').each(function(){
+      $(this).trigger('blur');
+    });
     $("#frame" + this.num + " .frame-inner").addClass("loss");
     setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("loss");}, 1000);
   }
@@ -122,8 +124,23 @@ var start = function() {
   // initRemember();
 }
 
+
 var resetTime = function(whichFrame) {
   frames[whichFrame].resetTime();
+  score += 1;
+  tasksTillNext -= 1;
+  if(tasksTillNext === 0) {
+    if(typeof levels[currLevel + 1] != "undefined") {
+      levels[currLevel + 1].activate();
+    } else {
+      tasksTillNext = 999;
+    }
+  }
+}
+var resetAll = function() {
+  for(i = 0; i < 16; i++) {
+    frames[i].resetTime();
+  }
 }
 var removeTime = function(whichFrame) {
   frames[whichFrame].failure();
@@ -195,11 +212,63 @@ var submitWord = function() {
   }
 }
 
+//backwards word game
+var currBword;
+function reverse(s) {
+    return s.split("").reverse().join("");
+}
+
+var chooseBword = function() {
+  currBword = words[Math.floor(Math.random()*words.length)];
+  $("#btype-word").html(currBword);
+}
+var submitBword = function() {
+  var userBword = $("input[name='btyping-input']").val();
+  $("input[name='btyping-input']").val("");
+  if(reverse(userBword) === currBword) {
+    resetTime(5);
+    chooseBword();
+  }
+  else {
+    removeTime(5);
+  }
+}
+
+//color game
+var currColor;
+var colors = ["red", "green", "blue", "purple", "pink", "yellow", "black", "orange"];
+var chooseColor = function() {
+  currColor = colors[Math.floor(Math.random()*colors.length)];
+  randColor = colors[Math.floor(Math.random()*colors.length)];
+  while(currColor === randColor) {
+    randColor = colors[Math.floor(Math.random()*colors.length)];
+  }
+  $("#color-lower").html(randColor);
+  $("#color-lower").css("color", currColor);
+  if(currColor === "black") {
+    $("#color-lower").addClass("no-outline");
+  }
+  else {
+    $("#color-lower").removeClass("no-outline");
+  }
+}
+var submitColor = function() {
+  var userColor = $("input[name='color-input']").val();
+  $("input[name='color-input']").val("");
+  if(currColor === userColor) {
+    resetTime(6);
+    chooseColor();
+  }
+  else {
+    removeTime(6);
+  }
+}
+
 //math
 var currAdd
 var chooseAddition = function() {
-  var num1 = Math.floor(Math.random()*50);
-  var num2 = Math.floor(Math.random()*50);
+  var num1 = Math.floor(Math.random()*levels[currLevel].maxAdd);
+  var num2 = Math.floor(Math.random()*levels[currLevel].maxAdd);
   currAdd = num1 + num2;
   $("#add-upper").html(num1 + " + " + num2);
 }
@@ -338,6 +407,12 @@ $(document).ready(function() {
       }
       else if($("input[name='remember-input']").is(":focus")) {
         submitRemember();
+      }
+      else if($("input[name='btyping-input']").is(":focus")) {
+        submitBword();
+      }
+      else if($("input[name='color-input']").is(":focus")) {
+        submitColor();
       }
     }
   });

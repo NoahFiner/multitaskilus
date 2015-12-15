@@ -284,7 +284,7 @@ h1 {
   color: #DDDDDD;
 }
 
-#type-upper, #add-upper, #mult-upper, #remember-upper {
+#btype-upper, #color-upper, #type-upper, #add-upper, #mult-upper, #remember-upper {
   font-size: 3.5vh;
   position: absolute;
   color: black;
@@ -293,6 +293,35 @@ h1 {
   right: 0;
   margin-left: auto;
   margin-right: auto;
+}
+
+#btype-upper, #color-upper {
+  font-size: 2.5vh;
+}
+
+#color-upper {
+  top: 5vh;
+}
+
+#color-lower {
+  font-size: 5vh;
+  top: 8vh;
+  position: absolute;
+  text-shadow:
+   -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+  left: 0;
+  right: 0;
+  margin-right: auto;
+  margin-left: auto;
+  transition: color 0.5s;
+  -webkit-transition: color 0.5s;
+}
+
+#color-lower.no-outline {
+  text-shadow: none;
 }
 
 #remember-lower {
@@ -313,7 +342,7 @@ h1 {
   color: blue;
 }
 
-#type-word {
+#type-word, #btype-word {
   color: blue;
 }
 
