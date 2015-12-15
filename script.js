@@ -17,10 +17,10 @@ var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, tasksTillNextLv
   this.tasksTillNext = tasksTillNextLvl;
   this.additionalTime = additionalTime;
   this.activate = function() {
-    for(i = 0; i < enabled.length; i++) {
+    for(var i = 0; i < enabled.length; i++) {
       enable(enabled[i]);
     }
-    for(i = 0; i < 16; i++) {
+    for(var i = 0; i < 16; i++) {
       frames[i].origTime += additionalTime;
     }
     resetAll();
@@ -36,16 +36,29 @@ var frameInits = [
   function() {chooseMult()},
   function() {initRemember()},
   function() {chooseBword()},
-  function() {chooseColor()}
+  function() {chooseColor()},
+  function() {chooseButton()},
+  function() {void(0)},
+  function() {void(0)},
+  function() {void(0)},
+  function() {void(0)},
+  function() {void(0)},
+  function() {void(0)},
+  function() {void(0)},
+  function() {void(0)},
+  function() {void(0)}
 
 ];
 
-levels[0] = new Level(0, [0, 1, 6], 3, 10, 10, 10, 0);
-levels[1] = new Level(1, [2], 3, 10, 10, 15, 5);
-levels[2] = new Level(2, [3], 3, 20, 10, 15, 2.5);
-levels[3] = new Level(3, [5], 3, 40, 12, 20, 1);
-levels[4] = new Level(4, [4], 3, 50, 15, 30, 1);
-levels[5] = new Level(4, [], 4, 100, 20, 30, 1);
+levels[0] = new Level(0, [0], 3, 5, 10, 1, 0);
+levels[1] = new Level(1, [1], 3, 5, 10, 10, 0);
+levels[2] = new Level(2, [2], 3, 10, 5, 10, 5);
+levels[3] = new Level(3, [3], 3, 20, 5, 15, 2.5);
+levels[4] = new Level(4, [7], 3, 25, 10, 15, 2.5);
+levels[5] = new Level(5, [6], 3, 30, 11, 15, 1);
+levels[6] = new Level(6, [5], 3, 40, 12, 20, 1);
+levels[7] = new Level(7, [4], 3, 50, 15, 30, 1);
+levels[8] = new Level(8, [], 4, 100, 20, 30, 1);
 
 var Frame = function(num, desc, time, active) {
   this.num = num;
@@ -83,11 +96,15 @@ var lose = function() {
   $("#replay").html("replay");
   setTimeout(function() {
     $("#menu").addClass("shown");
-    for(i = 0; i < 16; i++) {
+    for(var i = 0; i < 16; i++) {
       disable(i);
     }
   }, 2000);
-  $("#score").html("you accomplished " + score + " tasks in " + parseInt(totalTime) + "s");
+  if(score === 1) {
+    $("#score").html("you accomplished 1 task in " + parseInt(totalTime) + "s");
+  } else {
+    $("#score").html("you accomplished " + score + " tasks in " + parseInt(totalTime) + "s");
+  }
   score = 0;
   totalTime = 0;
   level = 0;
@@ -100,7 +117,7 @@ var start = function() {
   timeInterval = setInterval(function() {updateTimes()}, 10);
   shuffle();
   tasksTillNext = 100;
-  for(i = 0; i < 16; i++) {
+  for(var i = 0; i < 16; i++) {
     frames[i].origTime = Math.floor(Math.random()*20 + 10);
     frames[i].time = frames[i].origTime;
     resetTime(i);
@@ -138,7 +155,7 @@ var resetTime = function(whichFrame) {
   }
 }
 var resetAll = function() {
-  for(i = 0; i < 16; i++) {
+  for(var i = 0; i < 16; i++) {
     frames[i].resetTime();
   }
 }
@@ -157,7 +174,7 @@ var disable = function(whichFrame) {
 
 
 var updateTimes = function() {
-  for(i = 0; i < 16; i++) {
+  for(var i = 0; i < 16; i++) {
     if(frames[i].active) {
       $("#frame" + i + " .timer-text").html(frames[i].time.toFixed(2))
       frames[i].time -= 0.01;
@@ -180,16 +197,32 @@ var updateTimes = function() {
   totalTime += 0.01;
 }
 
+function findOccurrences(arr, val) {
+  var e, j,
+    count = 0;
+  for (e = 0, j = arr.length; e < j; e++) {
+    (arr[e] === val) && count++;
+  }
+  return count;
+}
+
 var shuffle = function() {
-  frameLocations = [[], [], [], []]
-  for(i = 0; i < 16; i++) {
+  frameLocations = [[20, 20, 20, 20],
+                    [20, 20, 20, 20],
+                    [20, 20, 20, 20],
+                    [20, 20, 20, 20]]
+  for(var i = 0; i < 16; i++) {
     var row = Math.floor(Math.random()*4);
-    while(frameLocations[row].length === 4) {
+    while(findOccurrences(frameLocations[row], 20) === 0) {
       row = Math.floor(Math.random()*4);
     }
-    frameLocations[row].push(i);
+    var column = Math.floor(Math.random()*4);
+    while(frameLocations[row][column] != 20) {
+      column = Math.floor(Math.random()*4);
+    }
+    frameLocations[row][column] = i;
     $("#frame" + i).css("top", (row*25) + "%");
-    $("#frame" + i).css("left", ((frameLocations[row].length - 1)*25) + "%");
+    $("#frame" + i).css("left", (column*25) + "%");
   }
 }
 
@@ -303,6 +336,42 @@ var submitMult = function() {
   }
 }
 
+//button game
+//currButton: "left" = left or buttonStates[0],
+//"right" = right or buttonStates[1]
+var randBoolean = function() {
+  return (Math.random() < 0.5);
+}
+var currButton
+var buttonStates = ["left", "right"];
+var chooseButton = function() {
+  currButton = buttonStates[Math.floor(Math.random()*2)];
+  var wrongButton;
+  if(currButton === "left") {
+    wrongButton = "right";
+  }
+  else {
+    wrongButton = "left";
+  }
+  var inverted = randBoolean();
+  if(inverted) {
+    $("#button-t").html("Don't press the " + wrongButton + " button.");
+  }
+  else {
+    $("#button-t").html("Press the " + currButton + " button");
+  }
+}
+var submitButton = function(id) {
+  userButton = id.substr(7, id.length - 6);
+  if(userButton === currButton) {
+    resetTime(7);
+    chooseButton();
+  }
+  else {
+    removeTime(7);
+  }
+}
+
 //remember game
 var currRemember, userRemember, rememberTime, rememberTimeUpdater;
 var chars = "ABCDEFG";
@@ -310,7 +379,7 @@ var rememberPhase = 0;
 
 var generateRandomString = function(len) {
   var finalString = "";
-  for(i = 0; i < len; i++) {
+  for(var i = 0; i < len; i++) {
     finalString += chars[Math.floor(Math.random()*chars.length)];
   }
   return finalString;
@@ -374,10 +443,10 @@ var testScreen = function() {
 
 
 $(document).ready(function() {
-  for(i = 0; i < 16; i++) {
+  for(var i = 0; i < 16; i++) {
     frames[i] = new Frame(i, "idk", Math.floor(Math.random()*20 + 10), false);
   }
-  for(i = 0; i < 16; i++) {
+  for(var i = 0; i < 16; i++) {
     $("#frame" + i + " > .frame-inner").append("<div class='timer' id='timer" + i
                                             + "'><h1 class='timer-text'>30</h1>"
                                             + "</div>");
@@ -392,6 +461,10 @@ $(document).ready(function() {
   });
 
   testScreen();
+
+  $(".button-game").click(function() {
+    submitButton($(this).attr("id").toString());
+  });
 
   $(document).keypress(function(e) {
     if(e.which == 13) {
