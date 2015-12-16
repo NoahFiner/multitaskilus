@@ -55,6 +55,44 @@ body {
   -webkit-transition: all 0.25s;
 }
 
+#assist-s, #assist-s + label {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 300px;
+  opacity: 0.5;
+  transition: opacity 0.25s;
+  -webkit-transition: opacity 0.25s;
+}
+
+#assist-s:hover, #assist-s:hover + label,
+#assist-s + label:hover, #assist-s + label:hover #assist-s {
+  opacity: 1;
+}
+
+label {
+  font-weight: 900;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+    display:none;
+}
+
+input[type="checkbox"] + label span {
+    display: inline-block;
+    width: 20px;
+    height: 19px;
+    background: url('checkboxes.png') left top no-repeat;
+    margin: -1px 4px 0 0;
+    cursor: pointer;
+    vertical-align:middle;
+}
+
+input[type="checkbox"]:checked + label span {
+    background: url('checkboxes.png') -19px top no-repeat;
+}
+
 #logo {
   top: 10vh;
   font-size: 150px !important;
@@ -127,6 +165,7 @@ body {
   position: relative;
   height: 100%;
   width: 100%;
+  pointer-events: auto;
   transform: scale(1);
   -webkit-transform: scale(1);
   transform-origin: 50% 50%;
@@ -159,11 +198,17 @@ body {
 
 .frame.disabled {
   opacity: 0.1;
+  pointer-events: none !important;
+}
+
+.frame.disabled > * {
+  pointer-events: none;
 }
 
 .frame > * {
   font-weight: 900;
   color: black;
+  pointer-events: auto;
 }
 
 .frame h1 {
@@ -280,18 +325,28 @@ h1 {
    -1px -1px 0 #000,
     1px -1px 0 #000,
     -1px 1px 0 #000,
-     1px 1px 0 #000;
-  transition: all 0.1s;
-  -webkit-transition: all 0.1s;
+     1px 1px 0 #000,
+     0px 1px 4px rgba(0, 0, 0, 0.5);
+ transform: scale(1);
+ -webkit-transform: scale(1);
+ transform-origin: 50% 50%;
+ -webkit-transform-origin: 50% 50%;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
 }
 
 #easy-reset-button:active > h1 {
   color: #DDDDDD;
 }
 
+#easy-reset-button:hover > h1 {
+  transform: scale(1.025);
+  -webkit-transform: scale(1.025);
+}
+
 /*I should make a class for these but I'm too lazy.*/
 #btype-upper, #color-upper, #type-upper, #add-upper, #mult-upper,
-#remember-upper, #button-t {
+#remember-upper, #button-t, #repeat-upper {
   font-size: 3.5vh;
   position: absolute;
   color: black;
@@ -304,6 +359,10 @@ h1 {
 
 #btype-upper, #color-upper {
   font-size: 2.5vh;
+}
+
+#repeat-upper {
+  top: 4vh;
 }
 
 #color-upper {
@@ -345,7 +404,7 @@ h1 {
   -webkit-transition: opacity 0.25s;
 }
 
-#remember-time {
+#remember-time, #repeat-word, #repeat-times {
   color: blue;
 }
 
@@ -365,9 +424,16 @@ h1 {
   color: black;
   font-size: 2.5vh;
   font-weight: 900;
+  opacity: 0.75;
+  background-color: white;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+}
+
+.input:focus {
   opacity: 1;
-  transition: opacity 0.25s;
-  -webkit-transition: opacity 0.25s;
+  height: 3.5vh;
+  width: 27.5vh;
 }
 
 .hidden {
@@ -405,7 +471,7 @@ h1 {
   width: 100%;
   height: 100%;
   box-shadow: 0 5px 15px rgba(0,0,0,0.75);
-  opacity: 0;
+  opacity: 0.75;
   transition: opacity 0.25s ease-in-out;
   -webkit-transition: opacity 0.25s ease-in-out;
 }

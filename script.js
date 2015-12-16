@@ -6,14 +6,17 @@ var score = 0;
 var totalTime = 0;
 var currLevel = 0;
 var tasksTillNext = 100;
+var assistSelect = false;
 
 levels = [];
-var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, tasksTillNextLvl, additionalTime) {
+var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, tasksTillNextLvl, additionalTime) {
   this.num = num;
   this.enabled = enabled;
   this.rememberAmt = rememberAmt;
   this.maxMult = maxMult;
   this.maxAdd = maxAdd;
+  this.repeatMax = repeatMax;
+  this.repeatCharsMax = repeatCharsMax;
   this.tasksTillNext = tasksTillNextLvl;
   this.additionalTime = additionalTime;
   this.activate = function() {
@@ -38,7 +41,7 @@ var frameInits = [
   function() {chooseBword()},
   function() {chooseColor()},
   function() {chooseButton()},
-  function() {void(0)},
+  function() {chooseRepeat()},
   function() {void(0)},
   function() {void(0)},
   function() {void(0)},
@@ -50,15 +53,17 @@ var frameInits = [
 
 ];
 
-levels[0] = new Level(0, [0], 3, 5, 10, 1, 0);
-levels[1] = new Level(1, [1], 3, 5, 10, 10, 0);
-levels[2] = new Level(2, [2], 3, 10, 5, 10, 5);
-levels[3] = new Level(3, [3], 3, 20, 5, 15, 2.5);
-levels[4] = new Level(4, [7], 3, 25, 10, 15, 2.5);
-levels[5] = new Level(5, [6], 3, 30, 11, 15, 1);
-levels[6] = new Level(6, [5], 3, 40, 12, 20, 1);
-levels[7] = new Level(7, [4], 3, 50, 15, 30, 1);
-levels[8] = new Level(8, [], 4, 100, 20, 30, 1);
+levels[0] = new Level(0, [0], 3, 5, 10, 15, 1, 1, 0);
+levels[1] = new Level(1, [1], 3, 5, 10, 15, 1, 10, 0);
+levels[2] = new Level(2, [2], 3, 10, 5, 15, 1, 10, 5);
+levels[3] = new Level(3, [3], 3, 20, 5, 15, 1, 15, 2.5);
+levels[4] = new Level(4, [7], 3, 25, 10, 15, 1, 15, 2.5);
+levels[5] = new Level(5, [6], 3, 30, 11, 15, 1, 15, 1);
+levels[6] = new Level(6, [5], 3, 40, 12, 15, 1, 20, 1);
+levels[7] = new Level(7, [8], 3, 45, 13, 15, 1, 20, 1);
+levels[8] = new Level(8, [4], 3, 50, 15, 20, 1, 30, 1);
+levels[9] = new Level(9, [], 4, 100, 20, 20, 2, 30, 2);
+levels[10] = new Level(10, [], 4, 250, 20, 17, 3, 30, 2);
 
 var Frame = function(num, desc, time, active) {
   this.num = num;
@@ -113,6 +118,12 @@ var lose = function() {
 
 var start = function() {
   gameActive = true;
+  if($("input[name='assist-s']").is(":checked")) {
+    assistSelect = true;
+  }
+  else {
+    assistSelect = false;
+  }
   $("#menu").removeClass("shown");
   timeInterval = setInterval(function() {updateTimes()}, 10);
   shuffle();
@@ -166,10 +177,12 @@ var enable = function(whichFrame) {
   frames[whichFrame].active = true;
   frameInits[whichFrame]();
   $("#frame" + whichFrame).removeClass("disabled");
+  $("#frame" + whichFrame).find("input").prop("disable", false);
 }
 var disable = function(whichFrame) {
   frames[whichFrame].active = false;
   $("#frame" + whichFrame).addClass("disabled");
+  $("#frame" + whichFrame).find("input").prop("disable", true);
 }
 
 
@@ -227,7 +240,7 @@ var shuffle = function() {
 }
 
 //word game
-var words = ["able", "achieve", "acoustics", "action", "activity", "aftermath", "afternoon", "afterthought", "apparel", "appliance", "beginner", "believe", "bomb", "border", "boundary", "breakfast", "cabbage", "cable", "calculator", "calendar", "caption", "carpenter", "cemetery", "channel", "circle", "creator", "creature", "education", "faucet", "feather", "friction", "fruit", "fuel", "galley", "guide", "guitar", "health", "heart", "idea", "kitten", "laborer", "language", "lawyer", "linen", "locket", "lumber", "magic", "minister", "mitten", "money", "mountain", "music", "partner", "passenger", "pickle", "picture", "plantation", "plastic", "pleasure", "pocket", "police", "pollution", "railway", "recess", "reward", "route", "scene", "scent", "squirrel", "stranger", "suit", "sweater", "temper", "territory", "texture", "thread", "treatment", "veil", "vein", "volcano", "wealth", "weather", "wilderness", "wren", "wrist", "writeradorable", "beautiful", "clean", "drab", "elegant", "fancy", "glamorous", "handsome", "long", "magnificent", "old-fashioned", "plain", "quaint", "sparkling", "ugliest", "unsightly", "wide-eyedaccount", "achiever", "acoustics", "act", "action", "activity", "actor", "addition", "adjustment", "advertisement", "advice", "aftermath", "afternoon", "afterthought", "agreement", "air", "airplane", "airport", "alarm", "amount", "amusement", "anger", "angle", "animal", "answer", "ant", "ants", "apparatus", "apparel", "apple", "apples", "appliance", "approval", "arch", "argument", "arithmetic", "arm", "army", "art", "attack", "attempt", "attention", "attraction", "aunt", "authority"];
+var words = ["able", "achieve", "acoustics", "action", "activity", "aftermath", "afternoon", "afterthought", "apparel", "appliance", "beginner", "believe", "bomb", "border", "boundary", "breakfast", "cabbage", "cable", "calculator", "calendar", "caption", "carpenter", "cemetery", "channel", "circle", "creator", "creature", "education", "faucet", "feather", "friction", "fruit", "fuel", "galley", "guide", "guitar", "health", "heart", "idea", "kitten", "laborer", "language", "lawyer", "linen", "locket", "lumber", "magic", "minister", "mitten", "money", "mountain", "music", "partner", "passenger", "pickle", "picture", "plantation", "plastic", "pleasure", "pocket", "police", "pollution", "railway", "recess", "reward", "route", "scene", "scent", "squirrel", "stranger", "suit", "sweater", "temper", "territory", "texture", "thread", "treatment", "veil", "vein", "volcano", "wealth", "weather", "wilderness", "wren", "wrist", "writer", "adorable", "beautiful", "clean", "drab", "elegant", "fancy", "glamorous", "handsome", "long", "magnificent", "old-fashioned", "plain", "quaint", "sparkling", "ugliest", "unsightly", "wide-eyedaccount", "achiever", "acoustics", "act", "action", "activity", "actor", "addition", "adjustment", "advertisement", "advice", "aftermath", "afternoon", "afterthought", "agreement", "air", "airplane", "airport", "alarm", "amount", "amusement", "anger", "angle", "animal", "answer", "ant", "ants", "apparatus", "apparel", "apple", "apples", "appliance", "approval", "arch", "argument", "arithmetic", "arm", "army", "art", "attack", "attempt", "attention", "attraction", "aunt", "authority"];
 var currWord;
 var chooseWord = function() {
   currWord = words[Math.floor(Math.random()*words.length)];
@@ -264,6 +277,30 @@ var submitBword = function() {
   }
   else {
     removeTime(5);
+  }
+}
+
+//repeat game
+var currRepeat;
+var chooseRepeat = function() {
+  var repeatBase = "";
+  for(i = 0; i < levels[currLevel].repeatCharsMax; i++) {
+    repeatBase += chars[Math.floor(Math.random()*chars.length)];
+  }
+  var repeatAmt = Math.floor(Math.random()*(levels[currLevel].repeatMax - 5) + 5);
+  currRepeat = Array(repeatAmt + 1).join(repeatBase);
+  $("#repeat-word").html(repeatBase);
+  $("#repeat-times").html(repeatAmt);
+}
+var submitRepeat = function() {
+  var userRepeat = $("input[name='repeat-input']").val();
+  $("input[name='repeat-input']").val("");
+  if(userRepeat.toLowerCase() === currRepeat.toLowerCase()) {
+    resetTime(8);
+    chooseRepeat();
+  }
+  else {
+    removeTime(8);
   }
 }
 
@@ -466,6 +503,18 @@ $(document).ready(function() {
     submitButton($(this).attr("id").toString());
   });
 
+  $(".frame-inner").mouseenter(function() {
+    if(assistSelect) {
+      $(this).find("input").focus();
+    }
+  })
+
+  $(".frame-inner").mouseleave(function() {
+    if(assistSelect) {
+      $(this).children("input").blur();
+    }
+  })
+
   $(document).keypress(function(e) {
     if(e.which == 13) {
       e.preventDefault();
@@ -486,6 +535,9 @@ $(document).ready(function() {
       }
       else if($("input[name='color-input']").is(":focus")) {
         submitColor();
+      }
+      else if($("input[name='repeat-input']").is(":focus")) {
+        submitRepeat();
       }
     }
   });
