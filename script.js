@@ -7,6 +7,8 @@ var totalTime = 0;
 var currLevel = 0;
 var tasksTillNext = 100;
 var assistSelect = false;
+var easyButtonDisabled = false;
+var easyButtonTimeout;
 
 levels = [];
 var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, tasksTillNextLvl, additionalTime) {
@@ -59,8 +61,8 @@ levels[2] = new Level(2, [2], 3, 10, 5, 15, 1, 10, 5);
 levels[3] = new Level(3, [3], 3, 20, 5, 15, 1, 15, 2.5);
 levels[4] = new Level(4, [7], 3, 25, 10, 15, 1, 15, 2.5);
 levels[5] = new Level(5, [6], 3, 30, 11, 15, 1, 15, 1);
-levels[6] = new Level(6, [5], 3, 40, 12, 15, 1, 20, 1);
-levels[7] = new Level(7, [8], 3, 45, 13, 15, 1, 20, 1);
+levels[6] = new Level(6, [8], 3, 40, 12, 15, 1, 20, 1);
+levels[7] = new Level(7, [5], 3, 45, 13, 15, 1, 20, 1);
 levels[8] = new Level(8, [4], 3, 50, 15, 20, 1, 30, 1);
 levels[9] = new Level(9, [], 4, 100, 20, 20, 2, 30, 2);
 levels[10] = new Level(10, [], 4, 250, 20, 17, 3, 30, 2);
@@ -125,6 +127,9 @@ var start = function() {
     assistSelect = false;
   }
   $("#menu").removeClass("shown");
+  clearTimeout(easyButtonTimeout);
+  easyButtonDisabled = false;
+  $("#easy-reset-button").removeClass("disabled");
   timeInterval = setInterval(function() {updateTimes()}, 10);
   shuffle();
   tasksTillNext = 100;
@@ -240,7 +245,7 @@ var shuffle = function() {
 }
 
 //word game
-var words = ["able", "achieve", "acoustics", "action", "activity", "aftermath", "afternoon", "afterthought", "apparel", "appliance", "beginner", "believe", "bomb", "border", "boundary", "breakfast", "cabbage", "cable", "calculator", "calendar", "caption", "carpenter", "cemetery", "channel", "circle", "creator", "creature", "education", "faucet", "feather", "friction", "fruit", "fuel", "galley", "guide", "guitar", "health", "heart", "idea", "kitten", "laborer", "language", "lawyer", "linen", "locket", "lumber", "magic", "minister", "mitten", "money", "mountain", "music", "partner", "passenger", "pickle", "picture", "plantation", "plastic", "pleasure", "pocket", "police", "pollution", "railway", "recess", "reward", "route", "scene", "scent", "squirrel", "stranger", "suit", "sweater", "temper", "territory", "texture", "thread", "treatment", "veil", "vein", "volcano", "wealth", "weather", "wilderness", "wren", "wrist", "writer", "adorable", "beautiful", "clean", "drab", "elegant", "fancy", "glamorous", "handsome", "long", "magnificent", "old-fashioned", "plain", "quaint", "sparkling", "ugliest", "unsightly", "achiever", "acoustics", "act", "action", "activity", "actor", "addition", "adjustment", "advertisement", "advice", "aftermath", "afternoon", "afterthought", "agreement", "air", "airplane", "airport", "alarm", "amount", "amusement", "anger", "angle", "animal", "answer", "ant", "ants", "apparatus", "apparel", "apple", "apples", "appliance", "approval", "arch", "argument", "arithmetic", "arm", "army", "art", "attack", "attempt", "attention", "attraction", "aunt", "authority"];
+var words = ["able", "achieve", "acoustics", "action", "activity", "aftermath", "afternoon", "afterthought", "apparel", "appliance", "beginner", "believe", "bomb", "border", "boundary", "breakfast", "cabbage", "cable", "calculator", "calendar", "caption", "carpenter", "cemetery", "channel", "circle", "creator", "creature", "education", "faucet", "feather", "friction", "fruit", "fuel", "galley", "guide", "guitar", "health", "heart", "idea", "kitten", "laborer", "language", "lawyer", "linen", "locket", "lumber", "magic", "minister", "mitten", "money", "mountain", "music", "partner", "passenger", "pickle", "picture", "plantation", "plastic", "pleasure", "pocket", "police", "pollution", "railway", "recess", "reward", "route", "scene", "scent", "squirrel", "stranger", "suit", "sweater", "temper", "territory", "texture", "thread", "treatment", "veil", "vein", "volcano", "wealth", "weather", "wilderness", "wren", "wrist", "writer", "adorable", "beautiful", "clean", "drab", "elegant", "fancy", "glamorous", "handsome", "long", "magnificent", "old-fashioned", "plain", "quaint", "sparkling", "ugliest", "unsightly", "achiever", "acoustics", "act", "action", "activity", "actor", "addition", "adjustment", "advice", "aftermath", "afternoon", "afterthought", "agreement", "air", "airplane", "airport", "alarm", "amount", "amusement", "anger", "angle", "animal", "answer", "ant", "ants", "apparatus", "apparel", "apple", "apples", "appliance", "approval", "arch", "argument", "arithmetic", "arm", "army", "art", "attack", "attempt", "attention", "attraction", "aunt", "authority"];
 var currWord;
 var chooseWord = function() {
   currWord = words[Math.floor(Math.random()*words.length)];
@@ -501,6 +506,18 @@ $(document).ready(function() {
 
   $(".button-game").click(function() {
     submitButton($(this).attr("id").toString());
+  });
+
+  $("#easy-reset-button").click(function() {
+    if(!easyButtonDisabled) {
+      resetTime(0);
+      easyButtonDisabled = true;
+      $("#easy-reset-button").addClass("disabled");
+      easyButtonTimeout = setTimeout(function() {
+        easyButtonDisabled = false;
+        $("#easy-reset-button").removeClass("disabled");
+      }, 5000);
+    }
   });
 
   $(".frame-inner").mouseenter(function() {
