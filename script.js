@@ -576,13 +576,17 @@ $(document).ready(function() {
 
   $(".frame-inner").mouseenter(function() {
     if(assistSelect) {
-      $(this).find("input").focus();
-      $(this).find("input").select();
+      if($(this).find("input").length > 0) {
+        $(this).find("input").focus();
+        $(this).find("input").select();
+        $(this).parent().addClass("selected");
+      }
     }
   })
 
   $(".frame-inner").mouseleave(function() {
     if(assistSelect) {
+      $(".frame").removeClass("selected");
       $(this).children("input").blur();
     }
   })
