@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-  <title>multitaskilate</title>
+  <title>multitaskilus</title>
   <script type="text/javascript" src="jquery/jquery.js"></script>
   <script type="text/javascript" src="jquery/jqueryui.js"></script>
   <script type="text/javascript" src="script.js"></script>
@@ -9,9 +9,11 @@
 </head>
 <body>
   <div id="everything">
+    <p id="current-score">696 tasks</p>
+    <p id="current-time">69.69 seconds</p>
     <div id="absolute-stuff">
       <div id="menu" class="shown">
-        <h1 id="logo" class="helvetica">multitaskilate</h1>
+        <h1 id="logo" class="helvetica">multitaskilus</h1>
         <h1 id="logo-motto">don't relieve stress, create it!</h1>
         <input type="checkbox" id="assist-s" name="assist-s"/>
         <label for="assist-s"><span></span>assisted selecting</label>
@@ -24,7 +26,7 @@
       <div class="frame" id="frame0">
         <div class="frame-inner">
           <h1 class="title">Click to reset time!</h1>
-          <div id="easy-reset-button"><h1 class="helvetica">easy</h1></div>
+          <div class="easy-reset-button"><h1 class="helvetica">easy</h1></div>
         </div>
       </div>
       <div class="frame" id="frame1">
@@ -95,7 +97,10 @@
         </div>
       </div>
       <div class="frame" id="frame9">
-        <div class="frame-inner"></div>
+        <div class="frame-inner">
+          <h1 class="title">Press <span id="mash-amt">34</span> <span id="mash-times">times!</span></h1>
+          <div class="easy-reset-button mash-button"><h1 class="helvetica">MASH</h1></div>
+        </div>
       </div>
       <div class="frame" id="frame10">
         <div class="frame-inner"></div>

@@ -11,7 +11,7 @@ var easyButtonDisabled = false;
 var easyButtonTimeout;
 
 levels = [];
-var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, tasksTillNextLvl, additionalTime) {
+var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime) {
   this.num = num;
   this.enabled = enabled;
   this.rememberAmt = rememberAmt;
@@ -21,6 +21,7 @@ var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repe
   this.repeatCharsMax = repeatCharsMax;
   this.tasksTillNext = tasksTillNextLvl;
   this.additionalTime = additionalTime;
+  this.mashMax = mashMax;
   this.activate = function() {
     for(var i = 0; i < enabled.length; i++) {
       enable(enabled[i]);
@@ -31,6 +32,12 @@ var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repe
     resetAll();
     currLevel = this.num;
     tasksTillNext = this.tasksTillNext;
+    if (this.num === 0) {
+      currLevel = 0;
+      score = 0;
+      totalTime = 0;
+      level = 0;
+    }
   }
 }
 
@@ -44,7 +51,7 @@ var frameInits = [
   function() {chooseColor()},
   function() {chooseButton()},
   function() {chooseRepeat()},
-  function() {void(0)},
+  function() {chooseMash()},
   function() {void(0)},
   function() {void(0)},
   function() {void(0)},
@@ -55,17 +62,18 @@ var frameInits = [
 
 ];
 
-levels[0] = new Level(0, [0], 3, 5, 10, 15, 1, 1, 0);
-levels[1] = new Level(1, [1], 3, 5, 10, 15, 1, 10, 0);
-levels[2] = new Level(2, [2], 3, 10, 5, 15, 1, 10, 5);
-levels[3] = new Level(3, [3], 3, 20, 5, 15, 1, 15, 2.5);
-levels[4] = new Level(4, [7], 3, 25, 10, 15, 1, 15, 2.5);
-levels[5] = new Level(5, [6], 3, 30, 11, 15, 1, 15, 1);
-levels[6] = new Level(6, [8], 3, 40, 12, 15, 1, 20, 1);
-levels[7] = new Level(7, [5], 3, 45, 13, 15, 1, 20, 1);
-levels[8] = new Level(8, [4], 3, 50, 15, 20, 1, 30, 1);
-levels[9] = new Level(9, [], 4, 100, 20, 20, 2, 30, 2);
-levels[10] = new Level(10, [], 4, 250, 20, 17, 3, 30, 2);
+levels[0] = new Level(0, [0], 3, 5, 10, 15, 1, 20, 1, 0);
+levels[1] = new Level(1, [1], 3, 5, 10, 15, 1, 20, 10, 0);
+levels[2] = new Level(2, [2], 3, 10, 5, 15, 1, 20, 10, 5);
+levels[3] = new Level(3, [3], 3, 20, 5, 15, 1, 20, 15, 2.5);
+levels[4] = new Level(4, [7], 3, 25, 10, 15, 1, 20, 15, 2);
+levels[5] = new Level(5, [9], 3, 30, 11, 15, 1, 25, 15, 2);
+levels[6] = new Level(6, [6], 3, 30, 12, 15, 1, 25, 15, 1);
+levels[7] = new Level(7, [8], 3, 40, 13, 15, 1, 30, 20, 1);
+levels[8] = new Level(8, [5], 3, 45, 14, 15, 1, 30, 20, 1);
+levels[9] = new Level(9, [4], 3, 50, 15, 20, 1, 35, 30, 1);
+levels[10] = new Level(10, [], 4, 100, 20, 20, 2, 40, 30, 2);
+levels[11] = new Level(11, [], 4, 250, 20, 17, 3, 40, 30, 2);
 
 var Frame = function(num, desc, time, active) {
   this.num = num;
@@ -112,8 +120,6 @@ var lose = function() {
   } else {
     $("#score").html("you accomplished " + score + " tasks in " + parseInt(totalTime) + "s");
   }
-  score = 0;
-  totalTime = 0;
   level = 0;
   clearInterval(timeInterval);
 }
@@ -129,7 +135,7 @@ var start = function() {
   $("#menu").removeClass("shown");
   clearTimeout(easyButtonTimeout);
   easyButtonDisabled = false;
-  $("#easy-reset-button").removeClass("disabled");
+  $(".easy-reset-button").removeClass("disabled");
   timeInterval = setInterval(function() {updateTimes()}, 10);
   shuffle();
   tasksTillNext = 100;
@@ -143,6 +149,8 @@ var start = function() {
   totalTime = 0;
   level = 0;
   levels[0].activate();
+  $("#current-score").html(score + " tasks");
+  $("#current-time").html("0 seconds");
   //
   // //Word game
   // chooseWord();
@@ -161,6 +169,12 @@ var start = function() {
 var resetTime = function(whichFrame) {
   frames[whichFrame].resetTime();
   score += 1;
+  if(score != 1) {
+    $("#current-score").html(score + " tasks");
+  }
+  else {
+    $("#current-score").html("1 task");
+  }
   tasksTillNext -= 1;
   if(tasksTillNext === 0) {
     if(typeof levels[currLevel + 1] != "undefined") {
@@ -213,6 +227,7 @@ var updateTimes = function() {
     }
   }
   totalTime += 0.01;
+  $("#current-time").html(totalTime.toFixed(2) + " seconds");
 }
 
 function findOccurrences(arr, val) {
@@ -414,6 +429,29 @@ var submitButton = function(id) {
   }
 }
 
+//masher
+var mashAmt = 20;
+
+var chooseMash = function() {
+  mashAmt = Math.floor(Math.random()*(levels[currLevel].mashMax - 10)) + 10;
+  $("#mash-amt").html(mashAmt);
+  $("#mash-times").html("times!");
+}
+var pressMash = function() {
+  mashAmt -= 1;
+  if(mashAmt === 0) {
+    resetTime(9);
+    chooseMash();
+  }
+  else if(mashAmt === 1) {
+    $("#mash-times").html("time!");
+  }
+  else {
+    $("#mash-times").html("times!");
+  }
+  $("#mash-amt").html(mashAmt);
+}
+
 //remember game
 var currRemember, userRemember, rememberTime, rememberTimeUpdater;
 var chars = "ABCDEFG";
@@ -475,10 +513,20 @@ var testScreen = function() {
   var width = window.innerWidth;
   if(width <= height*1.33) {
     $("#warning").addClass("shown");
+    $("#replay").addClass("hidden");
     screenValid = false;
   }
   else {
+    if(height/width >= 0.5518044237485448) {
+      $("#current-score").css("display", "none");
+      $("#current-time").css("display", "none");
+    }
+    else {
+      $("#current-score").css("display", "block");
+      $("#current-time").css("display", "block");
+    }
     $("#warning").removeClass("shown");
+    $("#replay").removeClass("hidden");
     screenValid = true;
   }
 }
@@ -495,7 +543,9 @@ $(document).ready(function() {
   }
 
   $("#replay").click(function() {
-    start();
+    if(screenValid) {
+      start();
+    }
   });
 
   $(window).resize(function() {
@@ -508,14 +558,18 @@ $(document).ready(function() {
     submitButton($(this).attr("id").toString());
   });
 
-  $("#easy-reset-button").click(function() {
+  $(".mash-button").click(function() {
+    pressMash();
+  })
+
+  $(".easy-reset-button:not(.mash-button)").click(function() {
     if(!easyButtonDisabled) {
       resetTime(0);
       easyButtonDisabled = true;
-      $("#easy-reset-button").addClass("disabled");
+      $(".easy-reset-button:not(.mash-button)").addClass("disabled");
       easyButtonTimeout = setTimeout(function() {
         easyButtonDisabled = false;
-        $("#easy-reset-button").removeClass("disabled");
+        $(".easy-reset-button:not(.mash-button)").removeClass("disabled");
       }, 5000);
     }
   });
@@ -523,6 +577,7 @@ $(document).ready(function() {
   $(".frame-inner").mouseenter(function() {
     if(assistSelect) {
       $(this).find("input").focus();
+      $(this).find("input").select();
     }
   })
 
@@ -530,6 +585,10 @@ $(document).ready(function() {
     if(assistSelect) {
       $(this).children("input").blur();
     }
+  })
+
+  $(".input").focus(function() {
+    $(this).select();
   })
 
   $(document).keypress(function(e) {
