@@ -517,7 +517,7 @@ var testScreen = function() {
     screenValid = false;
   }
   else {
-    if(height/width >= 0.5518044237485448) {
+    if(height/width >= 0.6) {
       $("#current-score").css("display", "none");
       $("#current-time").css("display", "none");
     }
