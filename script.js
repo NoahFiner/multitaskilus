@@ -9,6 +9,12 @@ var tasksTillNext = 100;
 var assistSelect = false;
 var easyButtonDisabled = false;
 var easyButtonTimeout;
+var difficulty = "medium";
+var words;
+var easyWords = ["ball", "bat", "bed", "book", "boy", "bun", "can", "cake", "cap", "car", "cat", "cow", "cub", "cup", "dad", "day", "dog", "doll", "dust", "fan", "feet", "girl", "gun", "hall", "hat", "hen", "jar", "kite", "man", "map", "men", "mom", "pan", "pet", "pie", "pig", "pot", "rat", "son", "sun", "toe", "tub", "van", "apple", "arm", "banana", "bike", "bird", "book", "chin", "clam", "class", "clover", "club", "corn", "crayon", "crow", "crown", "crowd", "crib", "desk", "dime", "dirt", "dress", "fang", "field", "flag", "flower", "fog", "game", "heat", "hill", "home", "horn", "hose", "joke", "juice", "kite", "lake", "maid", "mask", "mice", "milk", "mint", "meal", "meat", "moon", "mother", "morning", "name", "nest", "nose", "pear", "pen", "pencil", "plant", "rain", "river", "road", "rock", "room", "rose", "seed", "shape", "shoe", "shop", "show", "sink", "snail", "snake", "snow", "soda", "sofa", "star", "step", "stew", "stove", "straw", "string", "summer", "swing", "table", "tank", "team", "tent", "test", "toes", "tree", "vest", "water", "wing", "winter", "woman", "women"];
+var mediumWords = ["alarm", "animal", "aunt", "bait", "balloon", "bath", "bead", "beam", "bean", "bedroom", "boot", "bread", "brick", "brother", "camp", "chicken", "children", "crook", "deer", "dock", "doctor", "downtown", "drum", "dust", "eye", "family", "father", "fight", "flesh", "food", "frog", "goose", "grade", "grandfather", "grandmother", "grape", "grass", "hook", "horse", "jail", "jam", "kiss", "kitten", "light", "loaf", "lock", "lunch", "lunchroom", "meal", "mother", "notebook", "owl", "pail", "parent", "park", "plot", "rabbit", "rake", "robin", "sack", "sail", "scale", "sea", "sister", "soap", "song", "spark", "space", "spoon", "spot", "spy", "summer", "tiger", "toad", "town", "trail", "tramp", "tray", "trick", "trip", "uncle", "vase", "winter", "water", "week", "wheel", "wish", "wool", "yard", "zebra", "actor", "airplane", "airport", "army", "baseball", "beef", "birthday", "boy", "brush", "bushes", "butter", "cast", "cave", "cent", "cherries", "cherry", "cobweb", "coil", "cracker", "dinner", "eggnog", "elbow", "face", "fireman", "flavor", "gate", "glove", "glue", "goldfish", "goose", "grain", "hair", "haircut", "hobbies", "holiday", "hot", "jellyfish", "ladybug", "mailbox", "number", "oatmeal", "pail", "pancake", "pear", "pest", "popcorn", "queen", "quicksand", "quiet", "quilt", "rainstorm", "scarecrow", "scarf", "stream", "street", "sugar", "throne", "toothpaste", "twig", "volleyball", "wood", "wrench"];
+var hardWords = ["advice", "anger", "answer", "apple", "arithmetic", "badge", "basket", "basketball", "battle", "beast", "beetle", "beggar", "brain", "branch", "bubble", "bucket", "cactus", "cannon", "cattle", "celery", "cellar", "cloth", "coach", "coast", "crate", "cream", "daughter", "donkey", "drug", "earthquake", "feast", "fifth", "finger", "flock", "frame", "furniture", "geese", "ghost", "giraffe", "governor", "honey", "hope", "hydrant", "icicle", "income", "island", "jeans", "judge", "lace", "lamp", "lettuce", "marble", "month", "north", "ocean", "patch", "plane", "playground", "poison", "riddle", "rifle", "scale", "seashore", "sheet", "sidewalk", "skate", "slave", "sleet", "smoke", "stage", "station", "thrill", "throat", "throne", "title", "toothbrush", "turkey", "underwear", "vacation", "vegetable", "visitor", "voyage", "year", "able", "achieve", "acoustics", "action", "activity", "aftermath", "afternoon", "afterthought", "apparel", "appliance", "beginner", "believe", "bomb", "border", "boundary", "breakfast", "cabbage", "cable", "calculator", "calendar", "caption", "carpenter", "cemetery", "channel", "circle", "creator", "creature", "education", "faucet", "feather", "friction", "fruit", "fuel", "galley", "guide", "guitar", "health", "heart", "idea", "kitten", "laborer", "language", "lawyer", "linen", "locket", "lumber", "magic", "minister", "mitten", "money", "mountain", "music", "partner", "passenger", "pickle", "picture", "plantation", "plastic", "pleasure", "pocket", "police", "pollution", "railway", "recess", "reward", "route", "scene", "scent", "squirrel", "stranger", "suit", "sweater", "temper", "territory", "texture", "thread", "treatment", "veil", "vein", "volcano", "wealth", "weather", "wilderness", "wren", "wrist", "writer"];
+
 
 levels = [];
 var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime) {
@@ -52,7 +58,7 @@ var frameInits = [
   function() {chooseButton()},
   function() {chooseRepeat()},
   function() {chooseMash()},
-  function() {void(0)},
+  function() {chooseCopy()},
   function() {void(0)},
   function() {void(0)},
   function() {void(0)},
@@ -67,13 +73,14 @@ levels[1] = new Level(1, [1], 3, 5, 10, 15, 1, 20, 10, 0);
 levels[2] = new Level(2, [2], 3, 10, 5, 15, 1, 20, 10, 5);
 levels[3] = new Level(3, [3], 3, 20, 5, 15, 1, 20, 15, 2.5);
 levels[4] = new Level(4, [7], 3, 25, 10, 15, 1, 20, 15, 2);
-levels[5] = new Level(5, [9], 3, 30, 11, 15, 1, 25, 15, 2);
-levels[6] = new Level(6, [6], 3, 30, 12, 15, 1, 25, 15, 1);
-levels[7] = new Level(7, [8], 3, 40, 13, 15, 1, 30, 20, 1);
-levels[8] = new Level(8, [5], 3, 45, 14, 15, 1, 30, 20, 1);
-levels[9] = new Level(9, [4], 3, 50, 15, 20, 1, 35, 30, 1);
-levels[10] = new Level(10, [], 4, 100, 20, 20, 2, 40, 30, 2);
-levels[11] = new Level(11, [], 4, 250, 20, 17, 3, 40, 30, 2);
+levels[5] = new Level(5, [10], 3, 25, 10, 15, 1, 20, 15, 2);
+levels[6] = new Level(6, [9], 3, 30, 11, 15, 1, 25, 15, 2);
+levels[7] = new Level(7, [6], 3, 30, 12, 15, 1, 25, 15, 1);
+levels[8] = new Level(8, [8], 3, 40, 13, 15, 1, 30, 20, 1);
+levels[9] = new Level(9, [5], 3, 45, 14, 15, 1, 30, 20, 1);
+levels[10] = new Level(10, [4], 3, 50, 15, 20, 1, 35, 30, 1);
+levels[11] = new Level(11, [], 4, 100, 20, 20, 2, 40, 30, 2);
+levels[12] = new Level(12, [], 4, 250, 20, 17, 3, 40, 30, 2);
 
 var Frame = function(num, desc, time, active) {
   this.num = num;
@@ -132,6 +139,7 @@ var start = function() {
   else {
     assistSelect = false;
   }
+  difficulty = $('#difficulty option:selected').text();
   $("#menu").removeClass("shown");
   clearTimeout(easyButtonTimeout);
   easyButtonDisabled = false;
@@ -143,6 +151,17 @@ var start = function() {
     frames[i].origTime = Math.floor(Math.random()*20 + 10);
     frames[i].time = frames[i].origTime;
     resetTime(i);
+  }
+  switch(difficulty) {
+    case "easy":
+      words = easyWords;
+      break;
+    case "medium":
+      words = mediumWords;
+      break;
+    case "hard":
+      words = hardWords;
+      break;
   }
   currLevel = 0;
   score = 0;
@@ -239,6 +258,14 @@ function findOccurrences(arr, val) {
   return count;
 }
 
+var generateRandomString = function(len, array) {
+  var finalString = "";
+  for(var i = 0; i < len; i++) {
+    finalString += array[Math.floor(Math.random()*array.length)];
+  }
+  return finalString;
+}
+
 var shuffle = function() {
   frameLocations = [[20, 20, 20, 20],
                     [20, 20, 20, 20],
@@ -259,8 +286,27 @@ var shuffle = function() {
   }
 }
 
+//copy and paste game
+var copyChars = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ1234567890-=!@#$%^&*()/?;|{}";
+var currCopy;
+var chooseCopy = function() {
+  currCopy = generateRandomString(10, copyChars);
+  $("#copy-word").html(currCopy);
+}
+var submitCopy = function() {
+  var userCopy = $("input[name='copy-input']").val();
+  $("input[name='copy-input']").val("");
+  if(userCopy === currCopy) {
+    resetTime(10);
+    chooseCopy();
+  }
+  else {
+    removeTime(10);
+  }
+}
+
+
 //word game
-var words = ["able", "achieve", "acoustics", "action", "activity", "aftermath", "afternoon", "afterthought", "apparel", "appliance", "beginner", "believe", "bomb", "border", "boundary", "breakfast", "cabbage", "cable", "calculator", "calendar", "caption", "carpenter", "cemetery", "channel", "circle", "creator", "creature", "education", "faucet", "feather", "friction", "fruit", "fuel", "galley", "guide", "guitar", "health", "heart", "idea", "kitten", "laborer", "language", "lawyer", "linen", "locket", "lumber", "magic", "minister", "mitten", "money", "mountain", "music", "partner", "passenger", "pickle", "picture", "plantation", "plastic", "pleasure", "pocket", "police", "pollution", "railway", "recess", "reward", "route", "scene", "scent", "squirrel", "stranger", "suit", "sweater", "temper", "territory", "texture", "thread", "treatment", "veil", "vein", "volcano", "wealth", "weather", "wilderness", "wren", "wrist", "writer", "adorable", "beautiful", "clean", "drab", "elegant", "fancy", "glamorous", "handsome", "long", "magnificent", "old-fashioned", "plain", "quaint", "sparkling", "ugliest", "unsightly", "achiever", "acoustics", "act", "action", "activity", "actor", "addition", "adjustment", "advice", "aftermath", "afternoon", "afterthought", "agreement", "air", "airplane", "airport", "alarm", "amount", "amusement", "anger", "angle", "animal", "answer", "ant", "ants", "apparatus", "apparel", "apple", "apples", "appliance", "approval", "arch", "argument", "arithmetic", "arm", "army", "art", "attack", "attempt", "attention", "attraction", "aunt", "authority"];
 var currWord;
 var chooseWord = function() {
   currWord = words[Math.floor(Math.random()*words.length)];
@@ -456,18 +502,9 @@ var pressMash = function() {
 var currRemember, userRemember, rememberTime, rememberTimeUpdater;
 var chars = "ABCDEFG";
 var rememberPhase = 0;
-
-var generateRandomString = function(len) {
-  var finalString = "";
-  for(var i = 0; i < len; i++) {
-    finalString += chars[Math.floor(Math.random()*chars.length)];
-  }
-  return finalString;
-}
-
 var initRemember = function() {
   rememberPhase = 1;
-  currRemember = generateRandomString(levels[currLevel].rememberAmt);
+  currRemember = generateRandomString(levels[currLevel].rememberAmt, chars);
   $("#remember-upper").html("Remember: " + currRemember);
   $("#remember-lower").removeClass("hidden");
   $("#remember-input").addClass("hidden");
@@ -618,6 +655,9 @@ $(document).ready(function() {
       }
       else if($("input[name='repeat-input']").is(":focus")) {
         submitRepeat();
+      }
+      else if($("input[name='copy-input']").is(":focus")) {
+        submitCopy();
       }
     }
   });

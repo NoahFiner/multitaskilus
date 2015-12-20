@@ -71,24 +71,73 @@ body {
 #assist-s, #assist-s + label {
   position: absolute;
   top: 30vh;
-  opacity: 0.5;
   right: 2.5vw;
   bottom: 5vw;
+  padding: 5px;
+  border-radius: 2px;
   left: auto;
   top: auto;
-  transform: scale(1) translateX(-50%);
-  -webkit-transform: scale(1) translateX(-50%);
-  transform-origin: 0% 50%;
-  -webkit-transform-origin: 0% 50%;
   transition: all 0.25s;
   -webkit-transition: all 0.25s;
+}
+
+#difficulty, #difficulty + label {
+  position: absolute;
+  display: inline-block;
+  bottom: 8vw;
+  right: 2.5vw;
+  left: auto;
+  top: auto;
+}
+
+#difficulty {
+  margin-right: 85px;
+  font-size: 15px;
+}
+
+#difficulty + label {
+  bottom: calc(8vw + 2.5px);
+}
+
+select {
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 0 !important;
+  padding: 5px 25px 5px 5px;
+  font-weight: 900;
+  border-bottom: 0px solid #225 !important;
+  border-left: 0px solid #558 !important;
+  background-color: rgba(100, 100, 125, 0.5) !important;
+  background: url("arrows.png") 96% / 15% no-repeat;
+  border-radius: 0px;
+  outline: 0;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+}
+
+select:hover {
+  border-bottom: 5px solid #225 !important;
+  border-left: 2.5px solid #558 !important;
+  background-color: rgba(100, 100, 125, 0.5);
+}
+
+/*target Internet Explorer 9 and Internet Explorer 10:*/
+@media screen and (min-width:0\0) {
+    select {
+        background:none;
+        padding: 5px;
+    }
+}
+
+select::-ms-expand { /* for IE 11 */
+    display: none;
 }
 
 #assist-s:hover, #assist-s:hover + label,
 #assist-s + label:hover, #assist-s + label:hover #assist-s {
   opacity: 1;
-  transform: scale(1.1) translateX(-50%);
-  -webkit-transform: scale(1.1) translateX(-50%);
 }
 
 label {
@@ -470,7 +519,7 @@ h1 {
 
 /*I should make a class for these but I'm too lazy.*/
 #btype-upper, #color-upper, #type-upper, #add-upper, #mult-upper,
-#remember-upper, #button-t, #repeat-upper {
+#remember-upper, #button-t, #repeat-upper, #copy-upper {
   font-size: 3.5vh;
   position: absolute;
   color: black;
@@ -490,6 +539,10 @@ h1 {
 }
 
 #color-upper {
+  top: 5vh;
+}
+
+#copy-upper {
   top: 5vh;
 }
 
@@ -529,7 +582,7 @@ h1 {
 }
 
 #remember-time, #repeat-word, #repeat-times,
-#type-word, #btype-word, #mash-amt {
+#type-word, #btype-word, #mash-amt, #copy-word {
   color: blue;
 }
 

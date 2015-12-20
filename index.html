@@ -17,6 +17,12 @@
         <h1 id="logo-motto">don't relieve stress, create it!</h1>
         <input type="checkbox" id="assist-s" name="assist-s"/>
         <label for="assist-s"><span></span>assisted selecting</label>
+        <select name="difficulty" id="difficulty">
+          <option value="easy">easy</option>
+          <option value="medium" selected>medium</option>
+          <option value="hard">hard</option>
+        </select>
+        <label for="difficulty"><span></span>difficulty</label>
         <h1 id="replay">play</h1>
         <h1 id="warning">your screen width is too small</h1>
         <h1 id="score"></h1>
@@ -103,7 +109,12 @@
         </div>
       </div>
       <div class="frame" id="frame10">
-        <div class="frame-inner"></div>
+        <div class="frame-inner">
+          <h1 id="copy-upper">Copy and paste<br><span id="copy-word">abcdefghijklmno</span></h1>
+          <form>
+            <input width="15vh" height="3vh" class="input" name="copy-input"/>
+          </form>
+        </div>
       </div>
       <div class="frame" id="frame11">
         <div class="frame-inner"></div>
