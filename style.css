@@ -278,14 +278,14 @@ input[type="checkbox"]:checked + label span {
   left: calc(40vw + 22.5vh) !important;
 }
 
-#unpause:hover {
-  border-bottom: 10px solid #225;
-  border-left: 5px solid #558;
+#unpause:hover, #restart:hover, #cancel:hover {
+  border-bottom: 10px solid #225 !important;
+  border-left: 5px solid #558 !important;
 }
 
-#unpause:active {
-  border-bottom: 2px solid #225;
-  border-left: 1px solid #558;
+#unpause:active, #restart:active, #cancel:active {
+  border-bottom: 2px solid #225 !important;
+  border-left: 1px solid #558 !important;
 }
 
 #game-outer {
