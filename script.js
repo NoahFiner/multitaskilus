@@ -8,6 +8,7 @@ var currLevel = 0;
 var tasksTillNext = 100;
 var assistSelect = false;
 var easyButtonDisabled = false;
+var paused = false;
 var easyButtonTimeout;
 var difficulty = "medium";
 var words;
@@ -59,7 +60,7 @@ var frameInits = [
   function() {chooseRepeat()},
   function() {chooseMash()},
   function() {chooseCopy()},
-  function() {void(0)},
+  function() {chooseBool()},
   function() {void(0)},
   function() {void(0)},
   function() {void(0)},
@@ -74,13 +75,14 @@ levels[2] = new Level(2, [2], 3, 10, 5, 15, 1, 20, 10, 5);
 levels[3] = new Level(3, [3], 3, 20, 5, 15, 1, 20, 15, 2.5);
 levels[4] = new Level(4, [7], 3, 25, 10, 15, 1, 20, 15, 2);
 levels[5] = new Level(5, [10], 3, 25, 10, 15, 1, 20, 15, 2);
-levels[6] = new Level(6, [9], 3, 30, 11, 15, 1, 25, 15, 2);
-levels[7] = new Level(7, [6], 3, 30, 12, 15, 1, 25, 15, 1);
-levels[8] = new Level(8, [8], 3, 40, 13, 15, 1, 30, 20, 1);
-levels[9] = new Level(9, [5], 3, 45, 14, 15, 1, 30, 20, 1);
-levels[10] = new Level(10, [4], 3, 50, 15, 20, 1, 35, 30, 1);
-levels[11] = new Level(11, [], 4, 100, 20, 20, 2, 40, 30, 2);
-levels[12] = new Level(12, [], 4, 250, 20, 17, 3, 40, 30, 2);
+levels[6] = new Level(6, [11], 3, 25, 11, 15, 1, 20, 15, 2);
+levels[7] = new Level(7, [9], 3, 30, 11, 15, 1, 25, 15, 2);
+levels[8] = new Level(8, [6], 3, 30, 12, 15, 1, 25, 15, 1);
+levels[9] = new Level(9, [8], 3, 40, 13, 15, 1, 30, 20, 1);
+levels[10] = new Level(10, [5], 3, 45, 14, 15, 1, 30, 20, 1);
+levels[11] = new Level(11, [4], 3, 50, 15, 20, 1, 35, 30, 1);
+levels[12] = new Level(12, [], 4, 100, 20, 20, 2, 40, 30, 2);
+levels[13] = new Level(13, [], 4, 250, 20, 17, 3, 40, 30, 2);
 
 var Frame = function(num, desc, time, active) {
   this.num = num;
@@ -113,7 +115,32 @@ var Frame = function(num, desc, time, active) {
   }
 }
 
-var lose = function() {
+var pause = function(restartConfirm) {
+  paused = true;
+  $("#paused-menu").addClass("shown");
+  if(!restartConfirm) {
+    $("#message").html("paused");
+    $(".paused").css("display", "block");
+    $(".restart").css("display", "none");
+  }
+  else {
+    $("#message").html("restart?");
+    $(".paused").css("display", "none");
+    $(".restart").css("display", "block");
+  }
+}
+
+var unpause = function() {
+  paused = false;
+  $("#paused-menu").removeClass("shown");
+}
+
+var restartConfirm = function() {
+  pause(true);
+}
+
+var lose = function(timeTillMenu) {
+  unpause();
   gameActive = false;
   $("#replay").html("replay");
   setTimeout(function() {
@@ -121,7 +148,7 @@ var lose = function() {
     for(var i = 0; i < 16; i++) {
       disable(i);
     }
-  }, 2000);
+  }, timeTillMenu);
   if(score === 1) {
     $("#score").html("you accomplished 1 task in " + parseInt(totalTime) + "s");
   } else {
@@ -170,18 +197,6 @@ var start = function() {
   levels[0].activate();
   $("#current-score").html(score + " tasks");
   $("#current-time").html("0 seconds");
-  //
-  // //Word game
-  // chooseWord();
-  //
-  // //Addition game
-  // chooseAddition();
-  //
-  // //Multiplaction game
-  // chooseMult();
-  //
-  // //Remember game
-  // initRemember();
 }
 
 
@@ -225,28 +240,30 @@ var disable = function(whichFrame) {
 
 
 var updateTimes = function() {
-  for(var i = 0; i < 16; i++) {
-    if(frames[i].active) {
-      $("#frame" + i + " .timer-text").html(frames[i].time.toFixed(2))
-      frames[i].time -= 0.01;
-      if(frames[i].time < 0) {
-        frames[i].epicFailure();
-        lose();
-      }
-      else if(frames[i].time < 5) {
-        $("#frame" + i).addClass("urgent2");
-      }
-      else if(frames[i].time < 10) {
-        $("#frame" + i).removeClass("urgent2");
-        $("#frame" + i).addClass("urgent1");
-      }
-      else {
-        $("#frame" + i).removeClass("urgent1 urgent2");
+  if(!paused) {
+    for(var i = 0; i < 16; i++) {
+      if(frames[i].active) {
+        $("#frame" + i + " .timer-text").html(frames[i].time.toFixed(2))
+        frames[i].time -= 0.01;
+        if(frames[i].time < 0) {
+          frames[i].epicFailure();
+          lose(2000);
+        }
+        else if(frames[i].time < 5) {
+          $("#frame" + i).addClass("urgent2");
+        }
+        else if(frames[i].time < 10) {
+          $("#frame" + i).removeClass("urgent2");
+          $("#frame" + i).addClass("urgent1");
+        }
+        else {
+          $("#frame" + i).removeClass("urgent1 urgent2");
+        }
       }
     }
+    totalTime += 0.01;
+    $("#current-time").html(totalTime.toFixed(2) + " seconds");
   }
-  totalTime += 0.01;
-  $("#current-time").html(totalTime.toFixed(2) + " seconds");
 }
 
 function findOccurrences(arr, val) {
@@ -475,6 +492,61 @@ var submitButton = function(id) {
   }
 }
 
+//boolean game
+var currBool
+var operations = ["<", ">"];
+var chooseBool = function() {
+  var fracNum1 = randBoolean();
+  var fracNum2 = randBoolean();
+  var operation = operations[Math.floor(Math.random()*2)];
+  var num1, num2;
+  var boolNums = [[Math.floor(Math.random()*19 + 1), Math.floor(Math.random()*19 + 1)],
+                  [Math.floor(Math.random()*19 + 1), Math.floor(Math.random()*19 + 1)]];
+  while(boolNums[0][0]/boolNums[0][1] === boolNums[1][0]/boolNums[1][1]) {
+    boolNums = [[Math.floor(Math.random()*19 + 1), Math.floor(Math.random()*19 + 1)],
+                    [Math.floor(Math.random()*19 + 1), Math.floor(Math.random()*19 + 1)]];
+  }
+  if(!fracNum1) {
+    num1 = (boolNums[0][0]/boolNums[0][1]).toFixed(3);
+  }
+  else if(fracNum1) {
+    num1 = boolNums[0][0] + "/" + boolNums[0][1];
+  }
+  if(!fracNum2) {
+    num2 = (boolNums[1][0]/boolNums[1][1]).toFixed(3);
+  }
+  else if(fracNum2) {
+    num2 = boolNums[1][0] + "/" + boolNums[1][1];
+  }
+  $("#bool-title").html(num1 + " " + operation + " " + num2);
+  if(boolNums[0][0]/boolNums[0][1] > boolNums[1][0]/boolNums[1][1]) {
+    if(operation === ">") {
+      currBool = true;
+    }
+    else {
+      currBool = false;
+    }
+  }
+  else {
+    if(operation === "<") {
+      currBool = true;
+    }
+    else {
+      currBool = false;
+    }
+  }
+}
+var submitBool = function(id) {
+  userBool = id.substr(5, id.length - 3);
+  if(userBool === currBool.toString()) {
+    resetTime(11);
+    chooseBool();
+  }
+  else {
+    removeTime(11);
+  }
+}
+
 //masher
 var mashAmt = 20;
 
@@ -557,10 +629,12 @@ var testScreen = function() {
     if(height/width >= 0.6) {
       $("#current-score").css("display", "none");
       $("#current-time").css("display", "none");
+      $("#restart-button").css("display", "none");
     }
     else {
       $("#current-score").css("display", "block");
       $("#current-time").css("display", "block");
+      $("#restart-button").css("display", "block");
     }
     $("#warning").removeClass("shown");
     $("#replay").removeClass("hidden");
@@ -593,6 +667,10 @@ $(document).ready(function() {
 
   $(".button-game").click(function() {
     submitButton($(this).attr("id").toString());
+  });
+
+  $(".bool-button").click(function() {
+    submitBool($(this).attr("id").toString());
   });
 
   $(".mash-button").click(function() {

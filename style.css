@@ -36,10 +36,10 @@ body {
   pointer-events: none;
 }
 
-#menu {
+#menu, #paused-menu {
   width: 100%;
   height: 100%;
-  position: relative;
+  position: absolute;
   pointer-events: none !important;
   background-color: black;
   color: white;
@@ -48,20 +48,20 @@ body {
   -webkit-transition: all 0.5s;
 }
 
-#menu > * {
+#menu > div > *, #paused-menu > div > * {
   pointer-events: none !important;
 }
 
-#menu.shown {
+#menu.shown, #paused-menu.shown {
   opacity: 1;
   pointer-events: auto;
 }
 
-#menu.shown > * {
+#menu.shown > div > *, #paused-menu.shown > div > * {
   pointer-events: auto !important;
 }
 
-#menu > h1 {
+#menu > div > h1, #paused-menu > div > h1 {
   text-align: left;
   color: white;
   transition: all 0.25s;
@@ -235,6 +235,59 @@ input[type="checkbox"]:checked + label span {
   position: absolute;
 }
 
+#paused-menu {
+  position: absolute;
+}
+
+#paused-menu > div {
+  position: relative;
+  height: 100%;
+  width: 100%:
+}
+
+#message {
+  position: absolute;
+  top: 20vh;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center !important;
+  font-size: 20vh;
+}
+
+#unpause, #cancel, #restart {
+  position: absolute;
+  text-align: center !important;
+  bottom: 10vh;
+  left: calc(50vw - 12.5vh);
+  width: 25vh;
+  font-size: 10vh;
+  padding-top: 0;
+}
+
+#cancel, #restart {
+  width: 35vh;
+}
+
+#cancel {
+  left: calc(40vw - 22.5vh) !important;
+}
+
+#restart {
+  left: calc(40vw + 22.5vh) !important;
+}
+
+#unpause:hover {
+  border-bottom: 10px solid #225;
+  border-left: 5px solid #558;
+}
+
+#unpause:active {
+  border-bottom: 2px solid #225;
+  border-left: 1px solid #558;
+}
+
 #game-outer {
   height: 100vh;
   width: 133vh;
@@ -265,6 +318,52 @@ input[type="checkbox"]:checked + label span {
   position: absolute;
   bottom: 30px;
   left: 10px;
+}
+
+#restart-button, #pause-button {
+  color: #bbb;
+  font-weight: 900;
+  position: absolute;
+  font-size: 15px;
+  bottom: 50px;
+  left: 10px;
+  padding: 2.5px;
+  padding-top: 0px;
+}
+
+#restart-button:active {
+  border-bottom: 2px solid #225;
+  border-left: 1px solid #558;
+}
+
+#pause-button {
+  bottom: 95vh;
+  left: 97vw;
+  padding: 2.5px;
+  padding-right: 6px;
+}
+
+.button {
+  border-radius: 2px;
+  cursor: pointer;
+  background-color: rgba(100, 100, 112, 1) !important;
+  padding: 5px;
+  height: auto;
+  width: auto;
+  display: inline-block;
+  border-bottom: 0 solid #446;
+  border-left: 0 solid #77A;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+}
+
+.button:hover {
+  border-bottom: 5px solid #225;
+  border-left: 2.5px solid #558;
+}
+
+.button:active {
+  background-color: rgba(50, 50, 62, 1) !important;
 }
 
 .frame {
@@ -691,4 +790,33 @@ h1 {
 
 #button-right {
   right: 4vh;
+}
+
+#frame11 > .frame-inner > .button {
+  position: absolute;
+  top: 15vh;
+  font-size: 3.5vh;
+}
+
+#bool-true {
+  left: 5vh;
+}
+
+#bool-true:hover {
+  top: calc(15vh - 5px) !important;
+  left: calc(5vh + 1px) !important;
+}
+
+#bool-false {
+  right: 5vh;
+}
+
+#bool-false:hover {
+  top: calc(15vh - 5px) !important;
+  right: calc(5vh - 1px) !important;
+}
+
+#bool-title {
+  top: 5vh;
+  font-size: 5vh;
 }

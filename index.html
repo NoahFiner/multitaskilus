@@ -11,21 +11,33 @@
   <div id="everything">
     <p id="current-score">696 tasks</p>
     <p id="current-time">69.69 seconds</p>
+    <p class="button" id="restart-button" onclick="pause(true)">restart</p>
+    <p class="button" id="pause-button" onclick="pause(false)">&#9616;&#9616;</p>
     <div id="absolute-stuff">
       <div id="menu" class="shown">
-        <h1 id="logo" class="helvetica">multitaskilus</h1>
-        <h1 id="logo-motto">don't relieve stress, create it!</h1>
-        <input type="checkbox" id="assist-s" name="assist-s"/>
-        <label for="assist-s"><span></span>assisted selecting</label>
-        <select name="difficulty" id="difficulty">
-          <option value="easy">easy</option>
-          <option value="medium" selected>medium</option>
-          <option value="hard">hard</option>
-        </select>
-        <label for="difficulty"><span></span>difficulty</label>
-        <h1 id="replay">play</h1>
-        <h1 id="warning">your screen width is too small</h1>
-        <h1 id="score"></h1>
+        <div style="height: 100%; width: 100%; position: relative">
+          <h1 id="logo" class="helvetica">multitaskilus</h1>
+          <h1 id="logo-motto">don't relieve stress, create it!</h1>
+          <input type="checkbox" id="assist-s" name="assist-s"/>
+          <label for="assist-s"><span></span>assisted selecting</label>
+          <select name="difficulty" id="difficulty">
+            <option value="easy">easy</option>
+            <option value="medium" selected>medium</option>
+            <option value="hard">hard</option>
+          </select>
+          <label for="difficulty"><span></span>difficulty</label>
+          <h1 id="replay">play</h1>
+          <h1 id="warning">your screen width is too small</h1>
+          <h1 id="score"></h1>
+        </div>
+      </div>
+      <div id="paused-menu">
+        <div>
+          <h1 id="message">paused</h1>
+          <h1 class="button paused" id="unpause" onclick="unpause()">play</h1>
+          <h1 class="button restart" id="cancel" onclick="unpause()">cancel</h1>
+          <h1 class="button restart" id="restart" onclick="lose(500)">restart</h1>
+        </div>
       </div>
     </div>
     <div id="game-outer">
@@ -117,7 +129,11 @@
         </div>
       </div>
       <div class="frame" id="frame11">
-        <div class="frame-inner"></div>
+        <div class="frame-inner">
+          <h1 class="title" id="bool-title">7/9 > 1</h1>
+          <p class="button bool-button" id="bool-true">true</p>
+          <p class="button bool-button" id="bool-false">false</p>
+        </div>
       </div>
       <div class="frame" id="frame12">
         <div class="frame-inner"></div>
