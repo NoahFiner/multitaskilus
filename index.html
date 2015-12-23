@@ -26,9 +26,21 @@
             <option value="hard">hard</option>
           </select>
           <label for="difficulty"><span></span>difficulty</label>
+          <h1 class="button" id="more-info" onclick="$('#menu').animate({scrollTop: window.innerHeight}, 1000)">more info</h1>
           <h1 id="replay">play</h1>
           <h1 id="warning">your screen width is too small</h1>
           <h1 id="score"></h1>
+        </div>
+        <div id="more-info-outer" style="height: 100%; width: 100%; position: relative">
+          <h1 class="button" id="less-info" onclick="$('#menu').animate({scrollTop: 0}, 1000)">back</h1>
+          <h1>instructions</h1>
+          <p>You will be presented with some tasks to do. Each task has a timer on it.</p>
+          <p>Just complete the tasks before their timers run out.</p>
+          <h1 style="margin-top: 5vh">controls</h1>
+          <p>Assisted selecting allows you to select text boxes by hovering over them.</p>
+          <p>Difficulty only affects the length of words that need to be typed.</p>
+          <p>Press enter to submit a task (unless it's pushing a button).</p>
+          <p style="margin-top: 5vh">multitaskilus was created by <a href="http://github.com/noahfiner" target="_blank">Noah Finer</a>.</p>
         </div>
       </div>
       <div id="paused-menu">
@@ -136,7 +148,10 @@
         </div>
       </div>
       <div class="frame" id="frame12">
-        <div class="frame-inner"></div>
+        <div class="frame-inner">
+          <h1 class="title">Hold for <span id="hold-amt">5.00</span> seconds!</h1>
+          <div class="easy-reset-button hold-button"><h1 class="helvetica">HOLD</h1></div>
+        </div>
       </div>
       <div class="frame" id="frame13">
         <div class="frame-inner"></div>
