@@ -14,6 +14,62 @@
     <p class="button" id="restart-button" onclick="pause(true)">restart</p>
     <p class="button" id="pause-button" onclick="pause(false)">&#9616;&#9616;</p>
     <div id="absolute-stuff">
+      <div id="customize-menu">
+        <div style="height: 100%; width: 70vh; float: right; position: relative">
+          <h1 id="customize-h1">Current tasks (min 14)</h1>
+          <input checked disabled type="checkbox" id="easy-c" name="easy-c"/>
+          <label for="easy-c"><span></span>easy button</label>
+
+          <input checked type="checkbox" id="typing-c" name="typing-c"/>
+          <label for="typing-c"><span></span>typing</label>
+
+          <input checked type="checkbox" id="add-c" name="add-c"/>
+          <label for="add-c"><span></span>adding</label>
+
+          <input checked type="checkbox" id="mult-c" name="mult-c"/>
+          <label for="mult-c"><span></span>multiplying</label>
+
+          <input checked type="checkbox" id="button-c" name="button-c"/>
+          <label for="button-c"><span></span>left/right button</label>
+
+          <input checked type="checkbox" id="square-c" name="square-c"/>
+          <label for="square-c"><span></span>squares</label>
+
+          <input checked type="checkbox" id="copy-c" name="copy-c"/>
+          <label for="copy-c"><span></span>copy and paste</label>
+
+          <input checked type="checkbox" id="mash-c" name="mash-c"/>
+          <label for="mash-c"><span></span>mash button</label>
+
+          <input checked type="checkbox" id="color-c" name="color-c"/>
+          <label for="color-c"><span></span>text colors</label>
+
+          <input checked type="checkbox" id="repeat-c" name="repeat-c"/>
+          <label for="repeat-c"><span></span>character repeating</label>
+
+          <input checked type="checkbox" id="bool-c" name="bool-c"/>
+          <label for="bool-c"><span></span>true/false</label>
+
+          <input checked type="checkbox" id="log-c" name="log-c"/>
+          <label for="log-c"><span></span>logarithms</label>
+
+          <input checked type="checkbox" id="hold-c" name="hold-c"/>
+          <label for="hold-c"><span></span>holding button</label>
+
+          <input checked type="checkbox" id="btyping-c" name="btyping-c"/>
+          <label for="btyping-c"><span></span>backwards typing</label>
+
+          <input checked type="checkbox" id="remember-c" name="remember-c"/>
+          <label for="remember-c"><span></span>remembering</label>
+
+          <input checked type="checkbox" id="idk1-c" name="idk1-c"/>
+          <label for="idk1-c"><span></span>???</label>
+
+          <input checked type="checkbox" id="idk2-c" name="idk2-c"/>
+          <label for="idk2-c"><span></span>???</label>
+
+        </div>
+      </div>
       <div id="menu" class="shown">
         <div style="height: 100%; width: 100%; position: relative">
           <h1 id="logo" class="helvetica">multitaskilus</h1>
@@ -26,12 +82,13 @@
             <option value="hard">hard</option>
           </select>
           <label for="difficulty"><span></span>difficulty</label>
+          <h1 class="button" id="customize" onclick="$('#customize-menu').addClass('shown')">customize tasks</h1>
           <h1 class="button" id="more-info" onclick="$('#menu').animate({scrollTop: window.innerHeight}, 1000)">more info</h1>
           <h1 id="replay">play</h1>
           <h1 id="warning">your screen width is too small</h1>
           <h1 id="score"></h1>
         </div>
-        <div id="more-info-outer" style="height: 100%; width: 100%; position: relative">
+        <div id="more-info-outer" style="height: calc(100% - 5vw); width: 100%; position: relative">
           <h1 class="button" id="less-info" onclick="$('#menu').animate({scrollTop: 0}, 1000)">back</h1>
           <h1>instructions</h1>
           <p>You will be presented with some tasks to do. Each task has a timer on it.</p>
@@ -154,10 +211,20 @@
         </div>
       </div>
       <div class="frame" id="frame13">
-        <div class="frame-inner"></div>
+        <div class="frame-inner">
+          <h1 id="square-upper"></h1>
+          <form>
+            <input width="15vh" height="3vh" class="input" name="square-input"/>
+          </form>
+        </div>
       </div>
       <div class="frame" id="frame14">
-        <div class="frame-inner"></div>
+        <div class="frame-inner">
+          <h1 id="log-upper"></h1>
+          <form>
+            <input width="15vh" height="3vh" class="input" name="log-input"/>
+          </form>
+        </div>
       </div>
       <div class="frame" id="frame15">
         <div class="frame-inner"></div>

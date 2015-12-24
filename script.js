@@ -15,6 +15,7 @@ var words;
 var easyWords = ["ball", "bat", "bed", "book", "boy", "bun", "can", "cake", "cap", "car", "cat", "cow", "cub", "cup", "dad", "day", "dog", "doll", "dust", "fan", "feet", "girl", "gun", "hall", "hat", "hen", "jar", "kite", "man", "map", "men", "mom", "pan", "pet", "pie", "pig", "pot", "rat", "son", "sun", "toe", "tub", "van", "apple", "arm", "banana", "bike", "bird", "book", "chin", "clam", "class", "clover", "club", "corn", "crayon", "crow", "crown", "crowd", "crib", "desk", "dime", "dirt", "dress", "fang", "field", "flag", "flower", "fog", "game", "heat", "hill", "home", "horn", "hose", "joke", "juice", "kite", "lake", "maid", "mask", "mice", "milk", "mint", "meal", "meat", "moon", "mother", "morning", "name", "nest", "nose", "pear", "pen", "pencil", "plant", "rain", "river", "road", "rock", "room", "rose", "seed", "shape", "shoe", "shop", "show", "sink", "snail", "snake", "snow", "soda", "sofa", "star", "step", "stew", "stove", "straw", "string", "summer", "swing", "table", "tank", "team", "tent", "test", "toes", "tree", "vest", "water", "wing", "winter", "woman", "women"];
 var mediumWords = ["alarm", "animal", "aunt", "bait", "balloon", "bath", "bead", "beam", "bean", "bedroom", "boot", "bread", "brick", "brother", "camp", "chicken", "children", "crook", "deer", "dock", "doctor", "downtown", "drum", "dust", "eye", "family", "father", "fight", "flesh", "food", "frog", "goose", "grade", "grandfather", "grandmother", "grape", "grass", "hook", "horse", "jail", "jam", "kiss", "kitten", "light", "loaf", "lock", "lunch", "lunchroom", "meal", "mother", "notebook", "owl", "pail", "parent", "park", "plot", "rabbit", "rake", "robin", "sack", "sail", "scale", "sea", "sister", "soap", "song", "spark", "space", "spoon", "spot", "spy", "summer", "tiger", "toad", "town", "trail", "tramp", "tray", "trick", "trip", "uncle", "vase", "winter", "water", "week", "wheel", "wish", "wool", "yard", "zebra", "actor", "airplane", "airport", "army", "baseball", "beef", "birthday", "boy", "brush", "bushes", "butter", "cast", "cave", "cent", "cherries", "cherry", "cobweb", "coil", "cracker", "dinner", "eggnog", "elbow", "face", "fireman", "flavor", "gate", "glove", "glue", "goldfish", "goose", "grain", "hair", "haircut", "hobbies", "holiday", "hot", "jellyfish", "ladybug", "mailbox", "number", "oatmeal", "pail", "pancake", "pear", "pest", "popcorn", "queen", "quicksand", "quiet", "quilt", "rainstorm", "scarecrow", "scarf", "stream", "street", "sugar", "throne", "toothpaste", "twig", "volleyball", "wood", "wrench"];
 var hardWords = ["advice", "anger", "answer", "apple", "arithmetic", "badge", "basket", "basketball", "battle", "beast", "beetle", "beggar", "brain", "branch", "bubble", "bucket", "cactus", "cannon", "cattle", "celery", "cellar", "cloth", "coach", "coast", "crate", "cream", "daughter", "donkey", "drug", "earthquake", "feast", "fifth", "finger", "flock", "frame", "furniture", "geese", "ghost", "giraffe", "governor", "honey", "hope", "hydrant", "icicle", "income", "island", "jeans", "judge", "lace", "lamp", "lettuce", "marble", "month", "north", "ocean", "patch", "plane", "playground", "poison", "riddle", "rifle", "scale", "seashore", "sheet", "sidewalk", "skate", "slave", "sleet", "smoke", "stage", "station", "thrill", "throat", "throne", "title", "toothbrush", "turkey", "underwear", "vacation", "vegetable", "visitor", "voyage", "year", "able", "achieve", "acoustics", "action", "activity", "aftermath", "afternoon", "afterthought", "apparel", "appliance", "beginner", "believe", "bomb", "border", "boundary", "breakfast", "cabbage", "cable", "calculator", "calendar", "caption", "carpenter", "cemetery", "channel", "circle", "creator", "creature", "education", "faucet", "feather", "friction", "fruit", "fuel", "galley", "guide", "guitar", "health", "heart", "idea", "kitten", "laborer", "language", "lawyer", "linen", "locket", "lumber", "magic", "minister", "mitten", "money", "mountain", "music", "partner", "passenger", "pickle", "picture", "plantation", "plastic", "pleasure", "pocket", "police", "pollution", "railway", "recess", "reward", "route", "scene", "scent", "squirrel", "stranger", "suit", "sweater", "temper", "territory", "texture", "thread", "treatment", "veil", "vein", "volcano", "wealth", "weather", "wilderness", "wren", "wrist", "writer"];
+var minimumEnabled = 14;
 
 
 levels = [];
@@ -62,32 +63,37 @@ var frameInits = [
   function() {chooseCopy()},
   function() {chooseBool()},
   function() {chooseHold()},
-  function() {void(0)},
-  function() {void(0)},
+  function() {chooseSquare()},
+  function() {chooseLog()},
   function() {void(0)},
   function() {void(0)}
 
 ];
 
+var names = ["easy", "typing", "add", "mult", "remember", "btyping", "color",
+            "button", "repeat", "mash", "copy", "bool", "hold", "square", "log",
+            ];
+
 levels[0] = new Level(0, [0], 3, 5, 10, 15, 1, 20, 1, 0);
 levels[1] = new Level(1, [1], 3, 5, 10, 15, 1, 20, 10, 0);
 levels[2] = new Level(2, [2], 3, 10, 5, 15, 1, 20, 10, 5);
 levels[3] = new Level(3, [3], 3, 20, 5, 15, 1, 20, 15, 2.5);
-levels[4] = new Level(4, [7], 3, 25, 10, 15, 1, 20, 15, 2);
+levels[4] = new Level(4, [7, 13], 3, 25, 10, 15, 1, 20, 15, 5);
 levels[5] = new Level(5, [10], 3, 25, 10, 15, 1, 20, 15, 2);
 levels[6] = new Level(6, [9], 3, 25, 11, 15, 1, 20, 15, 2);
 levels[7] = new Level(7, [6], 3, 30, 11, 15, 1, 25, 15, 2);
 levels[8] = new Level(8, [8], 3, 30, 12, 15, 1, 25, 15, 1);
 levels[9] = new Level(9, [11], 3, 40, 13, 15, 1, 30, 20, 1);
-levels[10] = new Level(10, [12], 3, 40, 13, 17, 1, 30, 20, 5);
-levels[11] = new Level(11, [5], 3, 45, 14, 18, 1, 30, 20, 2.5);
-levels[12] = new Level(12, [4], 3, 50, 15, 20, 1, 35, 30, 2);
-levels[13] = new Level(13, [], 4, 100, 20, 20, 2, 40, 30, 2);
-levels[14] = new Level(14, [], 4, 250, 20, 17, 3, 40, 30, 2);
+levels[10] = new Level(10, [14], 3, 40, 13, 16, 1, 30, 15, 2);
+levels[11] = new Level(11, [12], 3, 40, 13, 17, 1, 30, 20, 5);
+levels[12] = new Level(12, [5], 3, 45, 14, 18, 1, 30, 20, 2.5);
+levels[13] = new Level(13, [4], 3, 50, 15, 20, 1, 35, 30, 2);
+levels[14] = new Level(14, [], 4, 100, 20, 20, 2, 40, 30, 2);
+levels[15] = new Level(15, [], 4, 250, 20, 17, 3, 40, 30, 2);
 
 var Frame = function(num, desc, time, active) {
   this.num = num;
-  this.desc = name;
+  this.desc = desc;
   this.time = time;
   this.origTime = time;
   this.active = active;
@@ -159,6 +165,30 @@ var lose = function(timeTillMenu) {
   clearInterval(timeInterval);
 }
 
+var setDifficulty = function() {
+  $("#customize-menu").find("input").prop("checked", "checked");
+  $("#customize-menu").find("input").removeAttr("disabled");
+  $("input[name='easy-c']").attr("disabled", "disabled");
+  difficulty = $('#difficulty option:selected').text();
+  switch(difficulty) {
+    case "easy":
+      words = easyWords;
+      $("#customize-h1").html("Current tasks (min 12)");
+      minimumEnabled = 12;
+      break;
+    case "medium":
+      words = mediumWords;
+      $("#customize-h1").html("Current tasks (min 14)");
+      minimumEnabled = 14;
+      break;
+    case "hard":
+      $("#customize-h1").html("Current tasks (min 15)");
+      minimumEnabled = 15;
+      words = hardWords;
+      break;
+  }
+}
+
 var start = function() {
   gameActive = true;
   if($("input[name='assist-s']").is(":checked")) {
@@ -167,8 +197,8 @@ var start = function() {
   else {
     assistSelect = false;
   }
-  difficulty = $('#difficulty option:selected').text();
   $("#menu").removeClass("shown");
+  setDifficulty();
   clearTimeout(easyButtonTimeout);
   easyButtonDisabled = false;
   $(".easy-reset-button").removeClass("disabled");
@@ -180,17 +210,6 @@ var start = function() {
     frames[i].time = frames[i].origTime;
     resetTime(i);
   }
-  switch(difficulty) {
-    case "easy":
-      words = easyWords;
-      break;
-    case "medium":
-      words = mediumWords;
-      break;
-    case "hard":
-      words = hardWords;
-      break;
-  }
   currLevel = 0;
   score = 0;
   totalTime = 0;
@@ -200,6 +219,16 @@ var start = function() {
   $("#current-time").html("0 seconds");
 }
 
+var checkEnabledBoxes = function() {
+  var enabled = $("#customize-menu > div").find("input:checked").length;
+  if(enabled === minimumEnabled + 1) {
+    $("#customize-menu > div").find("input:checked").attr("disabled", "disabled");
+  }
+  else {
+    $("#customize-menu > div").find("input").removeAttr("disabled");
+    $("#customize-menu > div").find("input[name='easy-c']").attr("disabled", "disabled");
+  }
+}
 
 var resetTime = function(whichFrame) {
   frames[whichFrame].resetTime();
@@ -228,10 +257,13 @@ var removeTime = function(whichFrame) {
   frames[whichFrame].failure();
 }
 var enable = function(whichFrame) {
-  frames[whichFrame].active = true;
-  frameInits[whichFrame]();
-  $("#frame" + whichFrame).removeClass("disabled");
-  $("#frame" + whichFrame).find("input").prop("disable", false);
+  var currName = frames[whichFrame].desc;
+  if($("input[name='" + currName + "-c']").is(":checked")) {
+    frames[whichFrame].active = true;
+    frameInits[whichFrame]();
+    $("#frame" + whichFrame).removeClass("disabled");
+    $("#frame" + whichFrame).find("input").prop("disable", false);
+  }
 }
 var disable = function(whichFrame) {
   frames[whichFrame].active = false;
@@ -454,6 +486,43 @@ var submitMult = function() {
   }
   else {
     removeTime(3);
+  }
+}
+
+var currSqaure
+var chooseSquare = function() {
+  var num1 = Math.floor(Math.random()*levels[currLevel].maxMult);
+  currSquare = num1 * num1;
+  $("#square-upper").html(num1 + "<sup>2</sup>");
+}
+var submitSquare = function() {
+  var userSquare = $("input[name='square-input']").val();
+  $("input[name='square-input']").val("");
+  if(parseInt(userSquare) === currSquare) {
+    resetTime(13);
+    chooseSquare();
+  }
+  else {
+    removeTime(13);
+  }
+}
+
+var currLog
+var chooseLog = function() {
+  var base = Math.floor(Math.random()*4 + 2);
+  currLog = Math.floor(Math.random()*4 + 1);
+  var ans = Math.pow(base, currLog);
+  $("#log-upper").html("log<sub>" + base + "</sub>" + ans);
+}
+var submitLog = function() {
+  var userLog = $("input[name='log-input']").val();
+  $("input[name='log-input']").val("");
+  if(parseInt(userLog) === currLog) {
+    resetTime(14);
+    chooseLog();
+  }
+  else {
+    removeTime(14);
   }
 }
 
@@ -688,7 +757,7 @@ var testScreen = function() {
 
 $(document).ready(function() {
   for(var i = 0; i < 16; i++) {
-    frames[i] = new Frame(i, "idk", Math.floor(Math.random()*20 + 10), false);
+    frames[i] = new Frame(i, names[i], Math.floor(Math.random()*20 + 10), false);
   }
   for(var i = 0; i < 16; i++) {
     $("#frame" + i + " > .frame-inner").append("<div class='timer' id='timer" + i
@@ -748,17 +817,31 @@ $(document).ready(function() {
         $(this).parent().addClass("selected");
       }
     }
-  })
+  });
 
   $(".frame-inner").mouseleave(function() {
     if(assistSelect) {
       $(".frame").removeClass("selected");
       $(this).children("input").blur();
     }
-  })
+  });
 
   $(".input").focus(function() {
     $(this).select();
+  });
+
+  $("#difficulty").change(function() {
+    setDifficulty();
+  });
+
+  $("#customize-menu").bind("click", function(event) {
+    if(event.target.id === "customize-menu") {
+      $(this).removeClass("shown");
+    }
+  });
+
+  $("#customize-menu > div > input").click(function() {
+    checkEnabledBoxes();
   })
 
   $(document).keypress(function(e) {
@@ -787,6 +870,12 @@ $(document).ready(function() {
       }
       else if($("input[name='copy-input']").is(":focus")) {
         submitCopy();
+      }
+      else if($("input[name='square-input']").is(":focus")) {
+        submitSquare();
+      }
+      else if($("input[name='log-input']").is(":focus")) {
+        submitLog();
       }
     }
   });

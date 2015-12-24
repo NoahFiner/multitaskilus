@@ -58,7 +58,7 @@ body {
   font-size: 2vh;
 }
 
-#menu, #paused-menu {
+#menu, #paused-menu, #customize-menu {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -70,17 +70,65 @@ body {
   -webkit-transition: all 0.5s;
 }
 
-#menu {
-  overflow: scroll;
+#customize-menu {
+  background-color: rgba(0, 0, 0, 0.75) !important;
 }
 
-#menu > div > *, #paused-menu > div > * {
+#customize-menu > div {
+  background-color: black;
+  border-left: 2px solid rgba(100, 100, 125, 1);
+  z-index: 1;
+  overflow-y: scroll;
+  right: -70vh;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+}
+
+#menu {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+#customize-menu {
+  overflow: hidden;
+  z-index:1;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+#menu > div > *, #paused-menu > div > *, #customize-menu > div > * {
   pointer-events: none !important;
 }
 
-#menu.shown, #paused-menu.shown {
+#customize-menu > div > h1 {
+  font-size: 5vh;
+}
+
+#customize-menu.shown > div > input,
+#customize-menu.shown > div > label {
+  pointer-events: auto !important;
+  z-index: 100;
+  cursor: pointer;
+}
+
+#menu.shown, #paused-menu.shown, #customize-menu.shown {
   opacity: 1;
   pointer-events: auto !important;
+}
+
+#customize-menu.shown > div {
+  pointer-events: auto !important;
+  right: 0;
+}
+
+#customize-menu > div > input + label {
+  display: block;
+  margin-left: 3vh;
+  font-size: 3.5vh;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
 }
 
 #menu.shown > div > *, #paused-menu.shown > div > * {
@@ -98,7 +146,7 @@ body {
   position: absolute;
   top: 30vh;
   right: 2.5vw;
-  bottom: 5vw;
+  bottom: 8vw;
   padding: 5px;
   border-radius: 2px;
   left: auto;
@@ -110,13 +158,17 @@ body {
 #difficulty, #difficulty + label {
   position: absolute;
   display: inline-block;
-  bottom: 8vw;
+  bottom: 11vw;
   right: 2.5vw;
   left: auto;
   top: auto;
 }
 
-#more-info, #less-info {
+#customize {
+  bottom: 5.25vw !important;
+}
+
+#more-info, #less-info, #customize {
   position: absolute;
   bottom: 2vw;
   left: auto;
@@ -128,7 +180,7 @@ body {
 }
 
 #less-info {
-  bottom: 100vh !important;
+  bottom: calc(100vh - 5vw) !important;
   right: 7.5vw !important;
 }
 
@@ -138,7 +190,7 @@ body {
 }
 
 #difficulty + label {
-  bottom: calc(8vw + 2.5px);
+  bottom: calc(11vw + 2.5px);
 }
 
 select {
@@ -670,7 +722,8 @@ h1 {
 
 /*I should make a class for these but I'm too lazy.*/
 #btype-upper, #color-upper, #type-upper, #add-upper, #mult-upper,
-#remember-upper, #button-t, #repeat-upper, #copy-upper {
+#remember-upper, #button-t, #repeat-upper, #copy-upper, #square-upper,
+#log-upper {
   font-size: 3.5vh;
   position: absolute;
   color: black;
@@ -679,6 +732,10 @@ h1 {
   right: 0;
   margin-left: auto;
   margin-right: auto;
+}
+
+sup, sub {
+  color: black;
 }
 
 #btype-upper, #color-upper {
