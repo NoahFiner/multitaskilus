@@ -71,10 +71,12 @@ body {
 }
 
 #customize-menu {
+  cursor: pointer !important;
   background-color: rgba(0, 0, 0, 0.75) !important;
 }
 
 #customize-menu > div {
+  cursor: default !important;
   background-color: black;
   border-left: 2px solid rgba(100, 100, 125, 1);
   z-index: 1;
@@ -111,6 +113,7 @@ body {
   pointer-events: auto !important;
   z-index: 100;
   cursor: pointer;
+  width: auto;
 }
 
 #menu.shown, #paused-menu.shown, #customize-menu.shown {
@@ -243,6 +246,11 @@ input[type="checkbox"] {
     display:none;
 }
 
+input[type="checkbox"] + label {
+  transition: opacity 0.25s;
+  -webkit-transition: opacity 0.25s;
+}
+
 input[type="checkbox"] + label span {
     display: inline-block;
     width: 20px;
@@ -255,6 +263,10 @@ input[type="checkbox"] + label span {
 
 input[type="checkbox"]:checked + label span {
     background: url('checkboxes.png') -19px top no-repeat;
+}
+
+input[type="checkbox"]:disabled + label {
+  opacity: 0.5;
 }
 
 #logo {
@@ -723,7 +735,7 @@ h1 {
 /*I should make a class for these but I'm too lazy.*/
 #btype-upper, #color-upper, #type-upper, #add-upper, #mult-upper,
 #remember-upper, #button-t, #repeat-upper, #copy-upper, #square-upper,
-#log-upper {
+#log-upper, #place-upper {
   font-size: 3.5vh;
   position: absolute;
   color: black;
@@ -750,8 +762,16 @@ sup, sub {
   top: 5vh;
 }
 
-#copy-upper {
+#copy-upper, #place-upper {
   top: 5vh;
+}
+
+#place-upper {
+  font-size: 2.5vh;
+}
+
+#place-word {
+  font-size: 3vh;
 }
 
 #color-lower {
@@ -791,7 +811,7 @@ sup, sub {
 
 #remember-time, #repeat-word, #repeat-times,
 #type-word, #btype-word, #mash-amt, #copy-word,
-#hold-amt {
+#hold-amt, #place-place, #place-word {
   color: blue;
 }
 

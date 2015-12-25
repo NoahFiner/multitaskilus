@@ -65,14 +65,12 @@ var frameInits = [
   function() {chooseHold()},
   function() {chooseSquare()},
   function() {chooseLog()},
-  function() {void(0)},
-  function() {void(0)}
-
+  function() {choosePlace()}
 ];
 
 var names = ["easy", "typing", "add", "mult", "remember", "btyping", "color",
             "button", "repeat", "mash", "copy", "bool", "hold", "square", "log",
-            ];
+            "place"];
 
 levels[0] = new Level(0, [0], 3, 5, 10, 15, 1, 20, 1, 0);
 levels[1] = new Level(1, [1], 3, 5, 10, 15, 1, 20, 10, 0);
@@ -82,14 +80,15 @@ levels[4] = new Level(4, [7, 13], 3, 25, 10, 15, 1, 20, 15, 5);
 levels[5] = new Level(5, [10], 3, 25, 10, 15, 1, 20, 15, 2);
 levels[6] = new Level(6, [9], 3, 25, 11, 15, 1, 20, 15, 2);
 levels[7] = new Level(7, [6], 3, 30, 11, 15, 1, 25, 15, 2);
-levels[8] = new Level(8, [8], 3, 30, 12, 15, 1, 25, 15, 1);
-levels[9] = new Level(9, [11], 3, 40, 13, 15, 1, 30, 20, 1);
-levels[10] = new Level(10, [14], 3, 40, 13, 16, 1, 30, 15, 2);
-levels[11] = new Level(11, [12], 3, 40, 13, 17, 1, 30, 20, 5);
-levels[12] = new Level(12, [5], 3, 45, 14, 18, 1, 30, 20, 2.5);
-levels[13] = new Level(13, [4], 3, 50, 15, 20, 1, 35, 30, 2);
-levels[14] = new Level(14, [], 4, 100, 20, 20, 2, 40, 30, 2);
-levels[15] = new Level(15, [], 4, 250, 20, 17, 3, 40, 30, 2);
+levels[8] = new Level(8, [16], 3, 30, 12, 15, 1, 25, 15, 2);
+levels[9] = new Level(9, [8], 3, 30, 12, 15, 1, 25, 15, 1);
+levels[10] = new Level(10, [11], 3, 40, 13, 15, 1, 30, 20, 1);
+levels[11] = new Level(11, [14], 3, 40, 13, 16, 1, 30, 15, 2);
+levels[12] = new Level(12, [12], 3, 40, 13, 17, 1, 30, 20, 5);
+levels[13] = new Level(13, [5], 3, 45, 14, 18, 1, 30, 20, 2.5);
+levels[14] = new Level(14, [4], 3, 50, 15, 20, 1, 35, 30, 2);
+levels[15] = new Level(15, [], 4, 100, 20, 20, 2, 40, 30, 2);
+levels[16] = new Level(16, [], 4, 250, 20, 17, 3, 40, 30, 2);
 
 var Frame = function(num, desc, time, active) {
   this.num = num;
@@ -182,8 +181,9 @@ var setDifficulty = function() {
       minimumEnabled = 14;
       break;
     case "hard":
-      $("#customize-h1").html("Current tasks (min 15)");
-      minimumEnabled = 15;
+      $("#customize-h1").html("Current tasks (min 16)");
+      $("#customize-menu").find("input").attr("disabled", "disabled");
+      minimumEnabled = 16;
       words = hardWords;
       break;
   }
@@ -221,8 +221,12 @@ var start = function() {
 
 var checkEnabledBoxes = function() {
   var enabled = $("#customize-menu > div").find("input:checked").length;
-  if(enabled === minimumEnabled + 1) {
+  if(enabled === minimumEnabled) {
     $("#customize-menu > div").find("input:checked").attr("disabled", "disabled");
+  }
+  else if (minimumEnabled === 16) {
+    $("#customize-menu").find("input").prop("checked", "checked");
+    $("#customize-menu").find("input").attr("disabled", "disabled");
   }
   else {
     $("#customize-menu > div").find("input").removeAttr("disabled");
@@ -352,6 +356,29 @@ var submitCopy = function() {
   }
   else {
     removeTime(10);
+  }
+}
+
+//type _ character game
+var places = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh",
+              "eighth", "ninth", "tenth", "eleventh", "twelveth", "thirteenth"];
+var currPlace;
+var choosePlace = function() {
+  var currPlaceString = generateRandomString(10, copyChars);
+  $("#place-word").html(currPlaceString);
+  var currPlacePosition = Math.floor(Math.random()*10);
+  currPlace = currPlaceString[currPlacePosition];
+  $("#place-place").html(places[currPlacePosition]);
+}
+var submitPlace = function() {
+  var userPlace = $("input[name='place-input']").val();
+  $("input[name='place-input']").val("");
+  if(userPlace === currPlace) {
+    resetTime(15);
+    choosePlace();
+  }
+  else {
+    removeTime(15);
   }
 }
 
@@ -876,6 +903,9 @@ $(document).ready(function() {
       }
       else if($("input[name='log-input']").is(":focus")) {
         submitLog();
+      }
+      else if($("input[name='place-input']").is(":focus")) {
+        submitPlace();
       }
     }
   });
