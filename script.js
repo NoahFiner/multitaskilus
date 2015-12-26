@@ -31,6 +31,9 @@ var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repe
   this.tasksTillNext = tasksTillNextLvl;
   this.additionalTime = additionalTime;
   this.mashMax = mashMax;
+
+  //enables all frames in enabled[] and adds time to each frame
+  //also reset all timers
   this.activate = function() {
     for(var i = 0; i < enabled.length; i++) {
       enable(enabled[i]);
@@ -50,6 +53,7 @@ var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repe
   }
 }
 
+//functions that start each frame
 var frameInits = [
   function() {void(0)},
   function() {chooseWord()},
@@ -68,11 +72,8 @@ var frameInits = [
   function() {chooseLog()},
   function() {choosePlace()}
 ];
-
-var names = ["easy", "typing", "add", "mult", "remember", "btyping", "color",
-            "button", "repeat", "mash", "copy", "bool", "hold", "square", "log",
-            "place"];
-
+//order: Level(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax,
+//repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime)
 levels[0] = new Level(0, [0], 3, 5, 10, 15, 1, 20, 1, 0);
 levels[1] = new Level(1, [1], 3, 5, 10, 15, 1, 20, 10, 0);
 levels[2] = new Level(2, [2], 3, 10, 5, 15, 1, 20, 10, 5);
@@ -91,6 +92,12 @@ levels[14] = new Level(14, [4], 3, 50, 15, 20, 1, 35, 30, 2);
 levels[15] = new Level(15, [], 4, 100, 20, 20, 2, 40, 30, 2);
 levels[16] = new Level(16, [], 4, 250, 20, 17, 3, 40, 30, 2);
 
+//these names will be looped through when frames are being created
+var names = ["easy", "typing", "add", "mult", "remember", "btyping", "color",
+            "button", "repeat", "mash", "copy", "bool", "hold", "square", "log",
+            "place"];
+
+//frame class. desc is basically the name since .name is already taken.
 var Frame = function(num, desc, time, active) {
   this.num = num;
   this.desc = desc;
@@ -106,12 +113,14 @@ var Frame = function(num, desc, time, active) {
     $("#frame" + this.num + " .frame-inner").addClass("success");
     setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("success");}, 100);
   }
+  //should run if the task is done wrong. will remove 5 seconds and make the frame red.
   this.failure = function() {
     var that = this;
     this.time -= 5;
     $("#frame" + this.num + " .frame-inner").addClass("failure");
     setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("failure");}, 100);
   }
+  //occurs when the frame is the cause of the loss. animation takes 1s.
   this.epicFailure = function() {
     var that = this;
     $('input').each(function(){
@@ -122,6 +131,9 @@ var Frame = function(num, desc, time, active) {
   }
 }
 
+//triggers the pause menu.
+//if restartConfirm is true, then the pause menu will show an option to restart or cancel.
+//if it's false, then the pause menu will just have the button "play"
 var pause = function(restartConfirm) {
   paused = true;
   $("#paused-menu").addClass("shown");
@@ -129,14 +141,14 @@ var pause = function(restartConfirm) {
     $("#message").html("paused");
     $(".paused").css("display", "block");
     $(".restart").css("display", "none");
-  }
-  else {
+  } else {
     $("#message").html("restart?");
     $(".paused").css("display", "none");
     $(".restart").css("display", "block");
   }
 }
 
+//hides the paused menu
 var unpause = function() {
   paused = false;
   $("#paused-menu").removeClass("shown");
@@ -146,6 +158,9 @@ var restartConfirm = function() {
   pause(true);
 }
 
+//resets the game
+//timeTillMenu is the amount of time the user can see the board before the main
+//menu shows up.
 var lose = function(timeTillMenu) {
   unpause();
   gameActive = false;
@@ -190,7 +205,8 @@ var getCookie = function(name) {
   return "";
 }
 
-
+//sets the difficulty based on the value of #difficulty option:selected.
+//also checks all tasks being enabled and redisables the easy button task
 var setDifficulty = function() {
   $("#customize-menu").find("input").prop("checked", "checked");
   $("#customize-menu").find("input").removeAttr("disabled");
@@ -207,6 +223,7 @@ var setDifficulty = function() {
       $("#customize-h1").html("Current tasks (min 14)");
       minimumEnabled = 14;
       break;
+    //hard will disable all checkboxes
     case "hard":
       $("#customize-h1").html("Current tasks (min 16)");
       $("#customize-menu").find("input").attr("disabled", "disabled");
@@ -216,12 +233,12 @@ var setDifficulty = function() {
   }
 }
 
+//initiates a new game
 var start = function() {
   gameActive = true;
   if($("input[name='assist-s']").is(":checked")) {
     assistSelect = true;
-  }
-  else {
+  } else {
     assistSelect = false;
   }
   $("#menu").removeClass("shown");
@@ -233,6 +250,7 @@ var start = function() {
   shuffle();
   tasksTillNext = 100;
   for(var i = 0; i < 16; i++) {
+    //frame times are reset
     frames[i].origTime = Math.floor(Math.random()*20 + 10);
     frames[i].time = frames[i].origTime;
     resetTime(i);
@@ -246,28 +264,30 @@ var start = function() {
   $("#current-time").html("0 seconds");
 }
 
+//sees how many checkboxes are unchecked.
+//if it's less than minimumEnabled (12 easy, 14 medium, 16 hard),
+//then disable all checked checkboxes.
+//otherwise enable all checkboxes other than the easy button one
 var checkEnabledBoxes = function() {
   var enabled = $("#customize-menu > div").find("input:checked").length;
   if(enabled === minimumEnabled) {
     $("#customize-menu > div").find("input:checked").attr("disabled", "disabled");
-  }
-  else if (minimumEnabled === 16) {
+  } else if (minimumEnabled === 16) {
     $("#customize-menu").find("input").prop("checked", "checked");
     $("#customize-menu").find("input").attr("disabled", "disabled");
-  }
-  else {
+  } else {
     $("#customize-menu > div").find("input").removeAttr("disabled");
     $("#customize-menu > div").find("input[name='easy-c']").attr("disabled", "disabled");
   }
 }
 
+//resets the time of a frame, increases the score by 1, decreases tasksTillNext by 1.
 var resetTime = function(whichFrame) {
   frames[whichFrame].resetTime();
   score += 1;
   if(score != 1) {
     $("#current-score").html(score + " tasks");
-  }
-  else {
+  } else {
     $("#current-score").html("1 task");
   }
   tasksTillNext -= 1;
@@ -279,14 +299,20 @@ var resetTime = function(whichFrame) {
     }
   }
 }
+
+//resets every frame's time
 var resetAll = function() {
   for(var i = 0; i < 16; i++) {
     frames[i].resetTime();
   }
 }
+
+//calls the specified frame's failure method, removes 5 seconds
 var removeTime = function(whichFrame) {
   frames[whichFrame].failure();
 }
+
+//enables a frame if its checkbox is checked
 var enable = function(whichFrame) {
   var currName = frames[whichFrame].desc;
   if($("input[name='" + currName + "-c']").is(":checked")) {
@@ -296,13 +322,18 @@ var enable = function(whichFrame) {
     $("#frame" + whichFrame).find("input").prop("disable", false);
   }
 }
+
+//disables a frame
 var disable = function(whichFrame) {
   frames[whichFrame].active = false;
   $("#frame" + whichFrame).addClass("disabled");
   $("#frame" + whichFrame).find("input").prop("disable", true);
 }
 
-
+//updates all times. is called every 10ms by timeInterval
+//only functions if paused is false
+//if a time is 0, then the game is lost
+//also adds classes to frames based on their times
 var updateTimes = function() {
   if(!paused) {
     for(var i = 0; i < 16; i++) {
@@ -312,15 +343,12 @@ var updateTimes = function() {
         if(frames[i].time < 0) {
           frames[i].epicFailure();
           lose(2000);
-        }
-        else if(frames[i].time < 5) {
+        } else if(frames[i].time < 5) {
           $("#frame" + i).addClass("urgent2");
-        }
-        else if(frames[i].time < 10) {
+        } else if(frames[i].time < 10) {
           $("#frame" + i).removeClass("urgent2");
           $("#frame" + i).addClass("urgent1");
-        }
-        else {
+        } else {
           $("#frame" + i).removeClass("urgent1 urgent2");
         }
       }
@@ -330,6 +358,39 @@ var updateTimes = function() {
   }
 }
 
+//tests if the screen width to height ratio allows for the entire board to be
+//in view.
+//if it's not, then you can't play the game. scrolling takes too much time
+//could be changed in the future
+var choose;
+var screenValid = true;
+var testScreen = function() {
+  var height = window.innerHeight;
+  var width = window.innerWidth;
+  if(width <= height*1.33) {
+    $("#warning").addClass("shown");
+    $("#replay").addClass("hidden");
+    screenValid = false;
+  } else {
+    //if h/w ratio is greater than 0.6, then there is room for the restart,
+    //score, and time elements on the bottom left.
+    if(height/width >= 0.6) {
+      $("#current-score").css("display", "none");
+      $("#current-time").css("display", "none");
+      $("#restart-button").css("display", "none");
+    } else {
+      $("#current-score").css("display", "block");
+      $("#current-time").css("display", "block");
+      $("#restart-button").css("display", "block");
+    }
+    $("#warning").removeClass("shown");
+    $("#replay").removeClass("hidden");
+    screenValid = true;
+  }
+}
+
+//finds the amount of times a value occurs in an array.
+//used for one of the tasks
 function findOccurrences(arr, val) {
   var e, j,
     count = 0;
@@ -339,6 +400,8 @@ function findOccurrences(arr, val) {
   return count;
 }
 
+//generates a random string based on characters in an array of a specified len
+//used for copy and paste, character finding, and remembering tasks
 var generateRandomString = function(len, array) {
   var finalString = "";
   for(var i = 0; i < len; i++) {
@@ -347,6 +410,7 @@ var generateRandomString = function(len, array) {
   return finalString;
 }
 
+//shuffles all frames in frameLocations[] and on #game-outer
 var shuffle = function() {
   frameLocations = [[20, 20, 20, 20],
                     [20, 20, 20, 20],
@@ -380,8 +444,7 @@ var submitCopy = function() {
   if(userCopy === currCopy) {
     resetTime(10);
     chooseCopy();
-  }
-  else {
+  } else {
     removeTime(10);
   }
 }
@@ -403,8 +466,7 @@ var submitPlace = function() {
   if(userPlace === currPlace) {
     resetTime(15);
     choosePlace();
-  }
-  else {
+  } else {
     removeTime(15);
   }
 }
@@ -422,8 +484,7 @@ var submitWord = function() {
   if(userWord.toLowerCase() === currWord) {
     resetTime(1);
     chooseWord();
-  }
-  else {
+  } else {
     removeTime(1);
   }
 }
@@ -444,8 +505,7 @@ var submitBword = function() {
   if(reverse(userBword) === currBword) {
     resetTime(5);
     chooseBword();
-  }
-  else {
+  } else {
     removeTime(5);
   }
 }
@@ -468,8 +528,7 @@ var submitRepeat = function() {
   if(userRepeat.toLowerCase() === currRepeat.toLowerCase()) {
     resetTime(8);
     chooseRepeat();
-  }
-  else {
+  } else {
     removeTime(8);
   }
 }
@@ -487,8 +546,7 @@ var chooseColor = function() {
   $("#color-lower").css("color", currColor);
   if(currColor === "black") {
     $("#color-lower").addClass("no-outline");
-  }
-  else {
+  } else {
     $("#color-lower").removeClass("no-outline");
   }
 }
@@ -498,8 +556,7 @@ var submitColor = function() {
   if(currColor === userColor) {
     resetTime(6);
     chooseColor();
-  }
-  else {
+  } else {
     removeTime(6);
   }
 }
@@ -518,12 +575,12 @@ var submitAddition = function() {
   if(parseInt(userAdd) === currAdd) {
     resetTime(2);
     chooseAddition();
-  }
-  else {
+  } else {
     removeTime(2);
   }
 }
 
+//multitplacation game
 var currMult
 var chooseMult = function() {
   var num1 = Math.floor(Math.random()*levels[currLevel].maxMult);
@@ -537,12 +594,12 @@ var submitMult = function() {
   if(parseInt(userMult) === currMult) {
     resetTime(3);
     chooseMult();
-  }
-  else {
+  } else {
     removeTime(3);
   }
 }
 
+//n^2 game
 var currSqaure
 var chooseSquare = function() {
   var num1 = Math.floor(Math.random()*levels[currLevel].maxMult);
@@ -555,12 +612,12 @@ var submitSquare = function() {
   if(parseInt(userSquare) === currSquare) {
     resetTime(13);
     chooseSquare();
-  }
-  else {
+  } else {
     removeTime(13);
   }
 }
 
+//logarithm game
 var currLog
 var chooseLog = function() {
   var base = Math.floor(Math.random()*4 + 2);
@@ -574,8 +631,7 @@ var submitLog = function() {
   if(parseInt(userLog) === currLog) {
     resetTime(14);
     chooseLog();
-  }
-  else {
+  } else {
     removeTime(14);
   }
 }
@@ -593,15 +649,13 @@ var chooseButton = function() {
   var wrongButton;
   if(currButton === "left") {
     wrongButton = "right";
-  }
-  else {
+  } else {
     wrongButton = "left";
   }
   var inverted = randBoolean();
   if(inverted) {
     $("#button-t").html("Don't press the " + wrongButton + " button.");
-  }
-  else {
+  } else {
     $("#button-t").html("Press the " + currButton + " button");
   }
 }
@@ -610,8 +664,7 @@ var submitButton = function(id) {
   if(userButton === currButton) {
     resetTime(7);
     chooseButton();
-  }
-  else {
+  } else {
     removeTime(7);
   }
 }
@@ -632,30 +685,25 @@ var chooseBool = function() {
   }
   if(!fracNum1) {
     num1 = (boolNums[0][0]/boolNums[0][1]).toFixed(3);
-  }
-  else if(fracNum1) {
+  } else if(fracNum1) {
     num1 = boolNums[0][0] + "/" + boolNums[0][1];
   }
   if(!fracNum2) {
     num2 = (boolNums[1][0]/boolNums[1][1]).toFixed(3);
-  }
-  else if(fracNum2) {
+  } else if(fracNum2) {
     num2 = boolNums[1][0] + "/" + boolNums[1][1];
   }
   $("#bool-title").html(num1 + " " + operation + " " + num2);
   if(boolNums[0][0]/boolNums[0][1] > boolNums[1][0]/boolNums[1][1]) {
     if(operation === ">") {
       currBool = true;
-    }
-    else {
+    } else {
       currBool = false;
     }
-  }
-  else {
+  } else {
     if(operation === "<") {
       currBool = true;
-    }
-    else {
+    } else {
       currBool = false;
     }
   }
@@ -665,13 +713,12 @@ var submitBool = function(id) {
   if(userBool === currBool.toString()) {
     resetTime(11);
     chooseBool();
-  }
-  else {
+  } else {
     removeTime(11);
   }
 }
 
-//holder
+//holding button game
 var holdTime = 5;
 var origHoldTime = 5;
 var holdSuccess = false;
@@ -703,8 +750,7 @@ var releaseHold = function() {
   $(".hold-button").css("background-color", "#3333ff");
   if(holdSuccess) {
     chooseHold();
-  }
-  else {
+  } else {
     holdSuccess = false;
     removeTime(12);
     holdTime = origHoldTime;
@@ -713,9 +759,8 @@ var releaseHold = function() {
   }
 }
 
-//masher
+//mashing button game
 var mashAmt = 20;
-
 var chooseMash = function() {
   mashAmt = Math.floor(Math.random()*(levels[currLevel].mashMax - 10)) + 10;
   $("#mash-amt").html(mashAmt);
@@ -726,11 +771,9 @@ var pressMash = function() {
   if(mashAmt === 0) {
     resetTime(9);
     chooseMash();
-  }
-  else if(mashAmt === 1) {
+  } else if(mashAmt === 1) {
     $("#mash-times").html("time!");
-  }
-  else {
+  } else {
     $("#mash-times").html("times!");
   }
   $("#mash-amt").html(mashAmt);
@@ -740,6 +783,8 @@ var pressMash = function() {
 var currRemember, userRemember, rememberTime, rememberTimeUpdater;
 var chars = "ABCDEFG";
 var rememberPhase = 0;
+//first phase displays the the text to be remembered. no input
+//lasts for five seconds
 var initRemember = function() {
   rememberPhase = 1;
   currRemember = generateRandomString(levels[currLevel].rememberAmt, chars);
@@ -757,7 +802,7 @@ var initRemember = function() {
     }
   }, 1000);
 }
-
+//shows the input but hides the text to be remembered
 var rememberSecondPhase = function() {
   rememberPhase = 2;
   $("#remember-upper").html("Type it in!");
@@ -765,7 +810,6 @@ var rememberSecondPhase = function() {
   $("#remember-input").removeClass("hidden");
   clearInterval(rememberTimeUpdater);
 }
-
 var submitRemember = function() {
   if(rememberPhase === 2) {
     userRemember = $("input[name='remember-input']").val();
@@ -774,74 +818,53 @@ var submitRemember = function() {
   if(userRemember.toUpperCase() === currRemember) {
     resetTime(4);
     initRemember();
-  }
-  else {
+  } else {
     removeTime(4);
   }
 }
 
-var choose;
-var screenValid = true;
-
-var testScreen = function() {
-  var height = window.innerHeight;
-  var width = window.innerWidth;
-  if(width <= height*1.33) {
-    $("#warning").addClass("shown");
-    $("#replay").addClass("hidden");
-    screenValid = false;
-  }
-  else {
-    if(height/width >= 0.6) {
-      $("#current-score").css("display", "none");
-      $("#current-time").css("display", "none");
-      $("#restart-button").css("display", "none");
-    }
-    else {
-      $("#current-score").css("display", "block");
-      $("#current-time").css("display", "block");
-      $("#restart-button").css("display", "block");
-    }
-    $("#warning").removeClass("shown");
-    $("#replay").removeClass("hidden");
-    screenValid = true;
-  }
-}
-
-
 $(document).ready(function() {
+  //highscore cookie setting
   if(getCookie("highscore") === "") {
     setCookie("highscore", "0", 9999);
-  }
-  else {
+  } else {
     highscore = getCookie("highscore");
   }
   $("#highscore").html("most tasks: " + highscore);
+
+  //creates all the frames with random times
   for(var i = 0; i < 16; i++) {
     frames[i] = new Frame(i, names[i], Math.floor(Math.random()*20 + 10), false);
   }
+  //gives each frame a timer
   for(var i = 0; i < 16; i++) {
     $("#frame" + i + " > .frame-inner").append("<div class='timer' id='timer" + i
                                             + "'><h1 class='timer-text'>30</h1>"
                                             + "</div>");
   }
 
+  //replay is the play button at first
   $("#replay").click(function() {
     if(screenValid) {
       start();
     }
   });
 
+  //test the screen size whenever the window is resized
   $(window).resize(function() {
     testScreen();
   });
-
+  //and also now
   testScreen();
 
+  //.button-game is the left/right button. submitButton handles everything with
+  //their ids passed
   $(".button-game").click(function() {
     submitButton($(this).attr("id").toString());
   });
 
+  //true/false buttons for that boolean game.
+  //submitBool handles everything, since their ids have true/false in them
   $(".bool-button").click(function() {
     submitBool($(this).attr("id").toString());
   });
@@ -858,6 +881,11 @@ $(document).ready(function() {
     releaseHold();
   });
 
+  //ok, this is a bit of me being lazy
+  //i tried to keep the styling of the easy button for the mash and hold button
+  //so i made a class. but the easy reset button needs resetting and i forgot to
+  //give it an id, so oh well
+  //don't kill me please
   $(".easy-reset-button:not(.mash-button, .hold-button)").click(function() {
     if(!easyButtonDisabled) {
       resetTime(0);
@@ -870,6 +898,8 @@ $(document).ready(function() {
     }
   });
 
+  //assisting selecting gets all those inputs selected
+  //when you hover over a frame
   $(".frame-inner").mouseenter(function() {
     if(assistSelect) {
       if($(this).find("input").length > 0) {
@@ -895,16 +925,25 @@ $(document).ready(function() {
     setDifficulty();
   });
 
+  //this is a little confusing, sorry
+  //basically, the customize menu consists of two divs: customize-menu and a
+  //child with no id or class that takes up the right 60vh (might be 70vh idk)
+  //if you click on customize-menu, then it'll hide the menu
+  //if you click on the child, the menu won't be hidden
   $("#customize-menu").bind("click", function(event) {
     if(event.target.id === "customize-menu") {
       $(this).removeClass("shown");
     }
   });
 
+  //every time a checkbox changes, make sure that the user can still click more.
   $("#customize-menu > div > input").click(function() {
     checkEnabledBoxes();
-  })
+  });
 
+  //sorry about this mess
+  //whenever the user clicks enter, prevent the default action of page reloading
+  //and depending on what input's in focus, submit that task
   $(document).keypress(function(e) {
     if(e.which == 13) {
       e.preventDefault();
