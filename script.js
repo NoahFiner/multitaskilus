@@ -16,6 +16,7 @@ var easyWords = ["ball", "bat", "bed", "book", "boy", "bun", "can", "cake", "cap
 var mediumWords = ["alarm", "animal", "aunt", "bait", "balloon", "bath", "bead", "beam", "bean", "bedroom", "boot", "bread", "brick", "brother", "camp", "chicken", "children", "crook", "deer", "dock", "doctor", "downtown", "drum", "dust", "eye", "family", "father", "fight", "flesh", "food", "frog", "goose", "grade", "grandfather", "grandmother", "grape", "grass", "hook", "horse", "jail", "jam", "kiss", "kitten", "light", "loaf", "lock", "lunch", "lunchroom", "meal", "mother", "notebook", "owl", "pail", "parent", "park", "plot", "rabbit", "rake", "robin", "sack", "sail", "scale", "sea", "sister", "soap", "song", "spark", "space", "spoon", "spot", "spy", "summer", "tiger", "toad", "town", "trail", "tramp", "tray", "trick", "trip", "uncle", "vase", "winter", "water", "week", "wheel", "wish", "wool", "yard", "zebra", "actor", "airplane", "airport", "army", "baseball", "beef", "birthday", "boy", "brush", "bushes", "butter", "cast", "cave", "cent", "cherries", "cherry", "cobweb", "coil", "cracker", "dinner", "eggnog", "elbow", "face", "fireman", "flavor", "gate", "glove", "glue", "goldfish", "goose", "grain", "hair", "haircut", "hobbies", "holiday", "hot", "jellyfish", "ladybug", "mailbox", "number", "oatmeal", "pail", "pancake", "pear", "pest", "popcorn", "queen", "quicksand", "quiet", "quilt", "rainstorm", "scarecrow", "scarf", "stream", "street", "sugar", "throne", "toothpaste", "twig", "volleyball", "wood", "wrench"];
 var hardWords = ["advice", "anger", "answer", "apple", "arithmetic", "badge", "basket", "basketball", "battle", "beast", "beetle", "beggar", "brain", "branch", "bubble", "bucket", "cactus", "cannon", "cattle", "celery", "cellar", "cloth", "coach", "coast", "crate", "cream", "daughter", "donkey", "drug", "earthquake", "feast", "fifth", "finger", "flock", "frame", "furniture", "geese", "ghost", "giraffe", "governor", "honey", "hope", "hydrant", "icicle", "income", "island", "jeans", "judge", "lace", "lamp", "lettuce", "marble", "month", "north", "ocean", "patch", "plane", "playground", "poison", "riddle", "rifle", "scale", "seashore", "sheet", "sidewalk", "skate", "slave", "sleet", "smoke", "stage", "station", "thrill", "throat", "throne", "title", "toothbrush", "turkey", "underwear", "vacation", "vegetable", "visitor", "voyage", "year", "able", "achieve", "acoustics", "action", "activity", "aftermath", "afternoon", "afterthought", "apparel", "appliance", "beginner", "believe", "bomb", "border", "boundary", "breakfast", "cabbage", "cable", "calculator", "calendar", "caption", "carpenter", "cemetery", "channel", "circle", "creator", "creature", "education", "faucet", "feather", "friction", "fruit", "fuel", "galley", "guide", "guitar", "health", "heart", "idea", "kitten", "laborer", "language", "lawyer", "linen", "locket", "lumber", "magic", "minister", "mitten", "money", "mountain", "music", "partner", "passenger", "pickle", "picture", "plantation", "plastic", "pleasure", "pocket", "police", "pollution", "railway", "recess", "reward", "route", "scene", "scent", "squirrel", "stranger", "suit", "sweater", "temper", "territory", "texture", "thread", "treatment", "veil", "vein", "volcano", "wealth", "weather", "wilderness", "wren", "wrist", "writer"];
 var minimumEnabled = 14;
+var highscore = 0;
 
 
 levels = [];
@@ -160,9 +161,35 @@ var lose = function(timeTillMenu) {
   } else {
     $("#score").html("you accomplished " + score + " tasks in " + parseInt(totalTime) + "s");
   }
+  if(score > highscore) {
+    highscore = score;
+    setCookie("highscore", highscore, 9999);
+  }
+  $("#highscore").html("most tasks: " + highscore);
   level = 0;
   clearInterval(timeInterval);
 }
+
+//cookies yum
+var setCookie = function(name, val, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires=" + d.toUTCString();
+  document.cookie = name + "=" + val + "; " + expires;
+}
+
+var getCookie = function(name) {
+  var findString = name + "=";
+  var cookieArray = document.cookie.split(';');
+  for(var i = 0; i < cookieArray.length; i++) {
+    if(cookieArray[i].search(findString) != -1) {
+      return cookieArray[i].substr(findString.length,
+                                  cookieArray[i].length - findString.length);
+    }
+  }
+  return "";
+}
+
 
 var setDifficulty = function() {
   $("#customize-menu").find("input").prop("checked", "checked");
@@ -783,6 +810,13 @@ var testScreen = function() {
 
 
 $(document).ready(function() {
+  if(getCookie("highscore") === "") {
+    setCookie("highscore", "0", 9999);
+  }
+  else {
+    highscore = getCookie("highscore");
+  }
+  $("#highscore").html("most tasks: " + highscore);
   for(var i = 0; i < 16; i++) {
     frames[i] = new Frame(i, names[i], Math.floor(Math.random()*20 + 10), false);
   }

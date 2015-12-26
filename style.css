@@ -56,6 +56,7 @@ body {
 
 #more-info-outer > p {
   font-size: 2vh;
+  line-height: 3vh;
 }
 
 #menu, #paused-menu, #customize-menu {
@@ -329,16 +330,21 @@ input[type="checkbox"]:disabled + label {
   opacity: 1;
 }
 
-#score {
+#score, #highscore {
   top: auto !important;
   left: 50%;
   transform: translateX(-50%);
   -webkit-transform: translateX(-50%);
-  bottom: 2.5vh;
+  bottom: 4.5vh;
   font-size: 3vh !important;
   pointer-events: none;
   opacity: 0.75;
   position: absolute;
+}
+
+#highscore {
+  bottom: 2vh !important;
+  font-size: 1.5vh !important;
 }
 
 #paused-menu {
@@ -348,7 +354,7 @@ input[type="checkbox"]:disabled + label {
 #paused-menu > div {
   position: relative;
   height: 100%;
-  width: 100%:
+  width: 100%;
 }
 
 #message {
