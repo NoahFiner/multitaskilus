@@ -22,6 +22,7 @@ var playedFrames = "1000000000000000";
 var amtChecked = 16;
 var difficultyMultiplier = 1;
 var frameOrder = [];
+var difficultyTimeMultiplier = 1;
 
 levels = [];
 var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime) {
@@ -43,7 +44,7 @@ var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repe
       enable(enabled[i]);
     }
     for(var i = 0; i < 16; i++) {
-      frames[i].origTime += additionalTime;
+      frames[i].origTime += additionalTime*difficultyTimeMultiplier;
     }
     resetAll();
     currLevel = this.num;
@@ -286,11 +287,13 @@ var setDifficulty = function(resetCheckboxes) {
       words = easyWords;
       minimumEnabled = 12;
       difficultyMultiplier = 0.8;
+      difficultyTimeMultiplier = 1.2;
       break;
     case "medium":
       words = mediumWords;
       minimumEnabled = 14;
       difficultyMultiplier = 1;
+      difficultyTimeMultiplier = 1;
       break;
     //hard will disable all checkboxes
     case "hard":
@@ -298,6 +301,7 @@ var setDifficulty = function(resetCheckboxes) {
       minimumEnabled = 16;
       words = hardWords;
       difficultyMultiplier = 1.2;
+      difficultyTimeMultiplier = 0.8;
       break;
   }
   $("#min-checkboxes").html(minimumEnabled)
@@ -675,8 +679,8 @@ var submitColor = function() {
 //math
 var currAdd
 var chooseAddition = function() {
-  var num1 = Math.floor(Math.random()*levels[currLevel].maxAdd);
-  var num2 = Math.floor(Math.random()*levels[currLevel].maxAdd);
+  var num1 = Math.floor(Math.random()*levels[currLevel].maxAdd*difficultyMultiplier);
+  var num2 = Math.floor(Math.random()*levels[currLevel].maxAdd*difficultyMultiplier);
   currAdd = num1 + num2;
   $("#add-upper").html(num1 + " + " + num2);
 }
@@ -694,8 +698,8 @@ var submitAddition = function() {
 //multitplacation game
 var currMult
 var chooseMult = function() {
-  var num1 = Math.floor(Math.random()*levels[currLevel].maxMult);
-  var num2 = Math.floor(Math.random()*levels[currLevel].maxMult);
+  var num1 = Math.floor(Math.random()*levels[currLevel].maxMult*difficultyMultiplier);
+  var num2 = Math.floor(Math.random()*levels[currLevel].maxMult*difficultyMultiplier);
   currMult = num1 * num2;
   $("#mult-upper").html(num1 + " * " + num2);
 }
@@ -713,7 +717,7 @@ var submitMult = function() {
 //n^2 game
 var currSqaure
 var chooseSquare = function() {
-  var num1 = Math.floor(Math.random()*levels[currLevel].maxMult);
+  var num1 = Math.floor(Math.random()*levels[currLevel].maxMult(difficultyMultiplier));
   currSquare = num1 * num1;
   $("#square-upper").html(num1 + "<sup>2</sup>");
 }
@@ -873,7 +877,7 @@ var releaseHold = function() {
 //mashing button game
 var mashAmt = 20;
 var chooseMash = function() {
-  mashAmt = Math.floor(Math.random()*(levels[currLevel].mashMax - 10)) + 10;
+  mashAmt = Math.floor(Math.random()*(levels[currLevel].mashMax - 10)*difficultyMultiplier) + 10;
   $("#mash-amt").html(mashAmt);
   $("#mash-times").html("times!");
 }
@@ -963,7 +967,8 @@ $(document).ready(function() {
 
   //creates all the frames with random times
   for(var i = 0; i < 16; i++) {
-    frames[i] = new Frame(i, names[i], moreNames[i], Math.floor(Math.random()*20 + 10), false);
+    frames[i] = new Frame(i, names[i], moreNames[i],
+          (Math.floor(Math.random()*20 + 10)*difficultyTimeMultiplier), false);
   }
   //gives each frame a timer
   for(var i = 0; i < 16; i++) {

@@ -111,6 +111,7 @@ body {
 
 #min-checkboxes {
   text-decoration: none;
+  font-weight: 900;
 }
 
 #min-checkboxes.maxed-out {
@@ -707,6 +708,12 @@ h1 {
 }
 
 .easy-reset-button > h1 {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   color: white;
   vertical-align: center;
   font-size: 5vh;
