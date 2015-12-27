@@ -17,7 +17,7 @@ var mediumWords = ["alarm", "animal", "aunt", "bait", "balloon", "bath", "bead",
 var hardWords = ["advice", "anger", "answer", "apple", "arithmetic", "badge", "basket", "basketball", "battle", "beast", "beetle", "beggar", "brain", "branch", "bubble", "bucket", "cactus", "cannon", "cattle", "celery", "cellar", "cloth", "coach", "coast", "crate", "cream", "daughter", "donkey", "drug", "earthquake", "feast", "fifth", "finger", "flock", "frame", "furniture", "geese", "ghost", "giraffe", "governor", "honey", "hope", "hydrant", "icicle", "income", "island", "jeans", "judge", "lace", "lamp", "lettuce", "marble", "month", "north", "ocean", "patch", "plane", "playground", "poison", "riddle", "rifle", "scale", "seashore", "sheet", "sidewalk", "skate", "slave", "sleet", "smoke", "stage", "station", "thrill", "throat", "throne", "title", "toothbrush", "turkey", "underwear", "vacation", "vegetable", "visitor", "voyage", "year", "able", "achieve", "acoustics", "action", "activity", "aftermath", "afternoon", "afterthought", "apparel", "appliance", "beginner", "believe", "bomb", "border", "boundary", "breakfast", "cabbage", "cable", "calculator", "calendar", "caption", "carpenter", "cemetery", "channel", "circle", "creator", "creature", "education", "faucet", "feather", "friction", "fruit", "fuel", "galley", "guide", "guitar", "health", "heart", "idea", "kitten", "laborer", "language", "lawyer", "linen", "locket", "lumber", "magic", "minister", "mitten", "money", "mountain", "music", "partner", "passenger", "pickle", "picture", "plantation", "plastic", "pleasure", "pocket", "police", "pollution", "railway", "recess", "reward", "route", "scene", "scent", "squirrel", "stranger", "suit", "sweater", "temper", "territory", "texture", "thread", "treatment", "veil", "vein", "volcano", "wealth", "weather", "wilderness", "wren", "wrist", "writer"];
 var minimumEnabled = 14;
 var highscore = 0;
-
+var playedFrames = "1000000000000000";
 
 levels = [];
 var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime) {
@@ -96,22 +96,31 @@ levels[16] = new Level(16, [], 4, 250, 20, 17, 3, 40, 30, 2);
 var names = ["easy", "typing", "add", "mult", "remember", "btyping", "color",
             "button", "repeat", "mash", "copy", "bool", "hold", "square", "log",
             "place"];
+//these will be for the checkboxes in customization
+var moreNames = ["easy button", "typing", "adding", "multiplying", "remembering",
+                "typing backwards", "text color", "left/right button", "repeating a letter",
+                "mash button", "copy and paste", "true/false statement",
+                "holding button", "squaring", "logarithms", "letter position in word"];
 
 //frame class. desc is basically the name since .name is already taken.
-var Frame = function(num, desc, time, active) {
+var Frame = function(num, desc, extendDesc, time, active) {
   this.num = num;
   this.desc = desc;
+  this.extendDesc = extendDesc;
   this.time = time;
   this.origTime = time;
   this.active = active;
+  this.played = false;
   if(this.active === false) {
     $("#frame" + this.num).addClass("disabled");
   }
   this.resetTime = function() {
-    var that = this;
-    this.time = this.origTime;
-    $("#frame" + this.num + " .frame-inner").addClass("success");
-    setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("success");}, 100);
+    if(this.active) {
+      var that = this;
+      this.time = this.origTime;
+      $("#frame" + this.num + " .frame-inner").addClass("success");
+      setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("success");}, 100);
+    }
   }
   //should run if the task is done wrong. will remove 5 seconds and make the frame red.
   this.failure = function() {
@@ -128,6 +137,17 @@ var Frame = function(num, desc, time, active) {
     });
     $("#frame" + this.num + " .frame-inner").addClass("loss");
     setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("loss");}, 1000);
+  }
+  this.enableCheckbox = function() {
+    if(this.num != 0) {
+      this.played = true;
+      playedFrames = playedFrames.replaceAt(this.num, "1");
+      if(this.played) {
+        $("label[for='"+this.desc+"-c']").html("<span></span>"+this.extendDesc);
+        $("input[name='"+this.desc+"-c']").removeAttr("disabled");
+        $("input[name='"+this.desc+"-c']").removeClass("unplayed");
+      }
+    }
   }
 }
 
@@ -178,11 +198,16 @@ var lose = function(timeTillMenu) {
   }
   if(score > highscore) {
     highscore = score;
-    setCookie("highscore", highscore, 9999);
+    setCookie("highscore", highscore, 99999);
   }
+
+  setCookie("played", playedFrames, 99999);
+  enableCheckboxesFromPF();
   $("#highscore").html("most tasks: " + highscore);
   level = 0;
   clearInterval(timeInterval);
+  $("input[name='easy-c']").attr("disabled", "disabled");
+  $("input[name='easy-c']").prop("checked", "checked");
 }
 
 //cookies yum
@@ -190,7 +215,7 @@ var setCookie = function(name, val, exdays) {
   var d = new Date();
   d.setTime(d.getTime() + (exdays*24*60*60*1000));
   var expires = "expires=" + d.toUTCString();
-  document.cookie = name + "=" + val + "; " + expires;
+  document.cookie = "; " + name + "=" + val + "; " + expires;
 }
 
 var getCookie = function(name) {
@@ -207,10 +232,13 @@ var getCookie = function(name) {
 
 //sets the difficulty based on the value of #difficulty option:selected.
 //also checks all tasks being enabled and redisables the easy button task
-var setDifficulty = function() {
-  $("#customize-menu").find("input").prop("checked", "checked");
-  $("#customize-menu").find("input").removeAttr("disabled");
-  $("input[name='easy-c']").attr("disabled", "disabled");
+//reset checkBoxes = true checks all checkboxes
+var setDifficulty = function(resetCheckboxes) {
+  if(resetCheckboxes) {
+    $("#customize-menu").find("input").prop("checked", "checked");
+    $("#customize-menu").find("input:not(.unplayed)").removeAttr("disabled");
+    $("input[name='easy-c']").attr("disabled", "disabled");
+  }
   difficulty = $('#difficulty option:selected').text();
   switch(difficulty) {
     case "easy":
@@ -242,7 +270,7 @@ var start = function() {
     assistSelect = false;
   }
   $("#menu").removeClass("shown");
-  setDifficulty();
+  setDifficulty(false);
   clearTimeout(easyButtonTimeout);
   easyButtonDisabled = false;
   $(".easy-reset-button").removeClass("disabled");
@@ -276,9 +304,11 @@ var checkEnabledBoxes = function() {
     $("#customize-menu").find("input").prop("checked", "checked");
     $("#customize-menu").find("input").attr("disabled", "disabled");
   } else {
-    $("#customize-menu > div").find("input").removeAttr("disabled");
+    $("#customize-menu > div").find("input:not(.unplayed)").removeAttr("disabled");
     $("#customize-menu > div").find("input[name='easy-c']").attr("disabled", "disabled");
   }
+  $("input[name='easy-c']").attr("disabled", "disabled");
+  $("input[name='easy-c']").prop("checked", "checked");
 }
 
 //resets the time of a frame, increases the score by 1, decreases tasksTillNext by 1.
@@ -317,6 +347,10 @@ var enable = function(whichFrame) {
   var currName = frames[whichFrame].desc;
   if($("input[name='" + currName + "-c']").is(":checked")) {
     frames[whichFrame].active = true;
+    if(!frames[whichFrame].played) {
+      frames[whichFrame].played = true;
+      frames[whichFrame].enableCheckbox();
+    }
     frameInits[whichFrame]();
     $("#frame" + whichFrame).removeClass("disabled");
     $("#frame" + whichFrame).find("input").prop("disable", false);
@@ -398,6 +432,12 @@ function findOccurrences(arr, val) {
     (arr[e] === val) && count++;
   }
   return count;
+}
+
+//replaces a certain character in a string at an index.
+//used for determining which checkboxes are active in customization
+String.prototype.replaceAt = function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
 }
 
 //generates a random string based on characters in an array of a specified len
@@ -823,18 +863,35 @@ var submitRemember = function() {
   }
 }
 
+//played cookie setting
+if(getCookie("played") === "") {
+  setCookie("played", "0000000000000000", 99999);
+} else {
+  playedFrames = getCookie("played");
+}
+
+var enableCheckboxesFromPF = function() {
+  for(var i = 0; i < 16; i++) {
+    var framePlayed = playedFrames[i];
+    if(framePlayed === "1") {
+      frames[i].enableCheckbox();
+    }
+  }
+}
+
 $(document).ready(function() {
   //highscore cookie setting
   if(getCookie("highscore") === "") {
-    setCookie("highscore", "0", 9999);
+    setCookie("highscore", "0", 99999);
   } else {
     highscore = getCookie("highscore");
   }
+
   $("#highscore").html("most tasks: " + highscore);
 
   //creates all the frames with random times
   for(var i = 0; i < 16; i++) {
-    frames[i] = new Frame(i, names[i], Math.floor(Math.random()*20 + 10), false);
+    frames[i] = new Frame(i, names[i], moreNames[i], Math.floor(Math.random()*20 + 10), false);
   }
   //gives each frame a timer
   for(var i = 0; i < 16; i++) {
@@ -922,8 +979,10 @@ $(document).ready(function() {
   });
 
   $("#difficulty").change(function() {
-    setDifficulty();
+    setDifficulty(true);
   });
+
+  enableCheckboxesFromPF();
 
   //this is a little confusing, sorry
   //basically, the customize menu consists of two divs: customize-menu and a
