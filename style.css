@@ -109,6 +109,14 @@ body {
   font-size: 5vh;
 }
 
+#min-checkboxes {
+  text-decoration: none;
+}
+
+#min-checkboxes.maxed-out {
+  text-decoration: underline;
+}
+
 #customize-menu.shown > div > input,
 #customize-menu.shown > div > label {
   pointer-events: auto !important;
@@ -533,11 +541,20 @@ input[type="checkbox"]:disabled + label {
   -webkit-transition: background-color 1ms;
 }
 
-.frame-inner.loss {
-  z-index: 394825798234785;
+.frame-inner.mainLoss {
+  z-index: 394898234785;
   background-color: rgba(255, 0, 0, 1);
-  transform: scale(1.4);
-  -webkit-transform: scale(1.4);
+  transform: scale(1.4) rotate(10deg) !important;
+  -webkit-transform: scale(1.4) rotate(10deg) !important;
+  transition: background-color 1ms, transform 0.25s, -webkit-transform 0.25s;
+  -webkit-transition: background-color 1ms, transform 0.25s, -webkit-transform 0.25s;
+}
+
+.frame-inner.loss {
+  z-index: -1;
+  background-color: rgba(255, 0, 0, 0);
+  transform: scale(1.1) rotate(10deg);
+  -webkit-transform: scale(1.1) rotate(10deg);
   transition: background-color 1ms, transform 0.25s, -webkit-transform 0.25s;
   -webkit-transition: background-color 1ms, transform 0.25s, -webkit-transform 0.25s;
 }

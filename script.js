@@ -21,6 +21,7 @@ var highscore = 0;
 var playedFrames = "1000000000000000";
 var amtChecked = 16;
 var difficultyMultiplier = 1;
+var frameOrder = [];
 
 levels = [];
 var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime) {
@@ -75,25 +76,42 @@ var frameInits = [
   function() {chooseLog()},
   function() {choosePlace()}
 ];
-//order: Level(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax,
-//repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime)
-levels[0] = new Level(0, [0], 3, 5, 10, 15, 1, 20, 1, 0);
-levels[1] = new Level(1, [1], 3, 5, 10, 15, 1, 20, 10, 0);
-levels[2] = new Level(2, [2], 3, 10, 5, 15, 1, 20, 10, 5);
-levels[3] = new Level(3, [3], 3, 20, 5, 15, 1, 20, 15, 2.5);
-levels[4] = new Level(4, [7, 13], 3, 25, 10, 15, 1, 20, 15, 5);
-levels[5] = new Level(5, [10], 3, 25, 10, 15, 1, 20, 15, 2);
-levels[6] = new Level(6, [9], 3, 25, 11, 15, 1, 20, 15, 2);
-levels[7] = new Level(7, [6], 3, 30, 11, 15, 1, 25, 15, 2);
-levels[8] = new Level(8, [15], 3, 30, 12, 15, 1, 25, 15, 2);
-levels[9] = new Level(9, [8], 3, 30, 12, 15, 1, 25, 15, 1);
-levels[10] = new Level(10, [11], 3, 40, 13, 15, 1, 30, 20, 1);
-levels[11] = new Level(11, [14], 3, 40, 13, 16, 1, 30, 15, 2);
-levels[12] = new Level(12, [12], 3, 40, 13, 17, 1, 30, 20, 5);
-levels[13] = new Level(13, [5], 3, 45, 14, 18, 1, 30, 20, 2.5);
-levels[14] = new Level(14, [4], 3, 50, 15, 20, 1, 35, 30, 2);
-levels[15] = new Level(15, [], 4, 100, 20, 20, 2, 40, 30, 2);
-levels[16] = new Level(16, [], 4, 250, 20, 17, 3, 40, 30, 2);
+
+//frameOrder is the order that levels are to take place.
+//randomized at the start of every game.
+var createNewFrameOrder = function() {
+  frameOrder = [];
+  for(var i = 1; i < 16; i++) {
+    frameOrder.push(i);
+  }
+  frameOrder = shuffleArray(frameOrder);
+  //add easy button at the start.
+  frameOrder.unshift(0);
+}
+
+var makeNewLevels = function() {
+  levels = [];
+  //order: Level(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax,
+  //repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime)
+  levels[0] = new Level(0, [frameOrder[0]],    3, 5, 10, 15, 1, 20, 1, 0);
+  levels[1] = new Level(1, [frameOrder[1]],    3, 5, 10, 15, 1, 20, 10, 0);
+  levels[2] = new Level(2, [frameOrder[2]],    3, 10, 5, 15, 1, 20, 10, 5);
+  levels[3] = new Level(3, [frameOrder[3]],    3, 20, 5, 15, 1, 20, 15, 2.5);
+  levels[4] = new Level(4, [frameOrder[4]],    3, 25, 10, 15, 1, 20, 15, 2.5);
+  levels[5] = new Level(5, [frameOrder[5]],    3, 25, 10, 15, 1, 20, 15, 2);
+  levels[6] = new Level(6, [frameOrder[6]],    3, 25, 10, 15, 1, 20, 15, 2);
+  levels[7] = new Level(7, [frameOrder[7]],    3, 25, 11, 15, 1, 20, 15, 2);
+  levels[8] = new Level(8, [frameOrder[8]],    3, 30, 11, 15, 1, 25, 15, 2);
+  levels[9] = new Level(9, [frameOrder[9]],    3, 30, 12, 15, 1, 25, 15, 2);
+  levels[10] = new Level(10, [frameOrder[10]], 3, 30, 12, 15, 1, 25, 15, 1);
+  levels[11] = new Level(11, [frameOrder[11]], 3, 40, 13, 15, 1, 30, 20, 1);
+  levels[12] = new Level(12, [frameOrder[12]], 3, 40, 13, 16, 1, 30, 15, 2);
+  levels[13] = new Level(13, [frameOrder[13]], 3, 40, 13, 17, 1, 30, 20, 5);
+  levels[14] = new Level(14, [frameOrder[14]], 3, 45, 14, 18, 1, 30, 20, 2.5);
+  levels[15] = new Level(15, [frameOrder[15]], 3, 50, 15, 20, 1, 35, 30, 2);
+  levels[16] = new Level(16, [],               4, 100, 20, 20, 2, 40, 30, 2);
+  levels[17] = new Level(17, [],               4, 250, 20, 17, 3, 40, 30, 2);
+}
 
 //these names will be looped through when frames are being created
 var names = ["easy", "typing", "add", "mult", "remember", "btyping", "color",
@@ -138,8 +156,21 @@ var Frame = function(num, desc, extendDesc, time, active) {
     $('input').each(function(){
       $(this).trigger('blur');
     });
-    $("#frame" + this.num + " .frame-inner").addClass("loss");
-    setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("loss");}, 1000);
+    $("#frame" + this.num + " .frame-inner").addClass("mainLoss");
+    setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("mainLoss");}, 1000);
+    $(".frame-inner:not(#frame" + this.num + " .frame-inner)").addClass("loss");
+    for(var i = 0; i < 16; i++) {
+      if(i != this.num) {
+        var randomRotation = Math.floor(Math.random()*100 - 50);
+        $("#frame" + i + " .frame-inner").attr("style",
+            "transform: transform: scale(1.1) rotate("+randomRotation+"deg);" +
+            "-webkit-transform: scale(1.1) rotate("+randomRotation+"deg)");
+      }
+    }
+    setTimeout(function() {
+      $(".frame-inner").attr("style", "")
+      $(".frame-inner").removeClass("loss");
+    }, 2000)
   }
   this.enableCheckbox = function() {
     if(this.num != 0) {
@@ -206,7 +237,7 @@ var lose = function(timeTillMenu) {
   } else {
     $("#score").html("you accomplished " + score + " tasks in " + parseInt(totalTime) + "s");
   }
-  if(points > highscore) {
+  if(parseInt(points) > parseInt(highscore)) {
     highscore = points;
     setCookie("highscore", highscore, 99999);
   }
@@ -253,29 +284,29 @@ var setDifficulty = function(resetCheckboxes) {
   switch(difficulty) {
     case "easy":
       words = easyWords;
-      $("#customize-h1").html("Current tasks (min 12)");
       minimumEnabled = 12;
       difficultyMultiplier = 0.8;
       break;
     case "medium":
       words = mediumWords;
-      $("#customize-h1").html("Current tasks (min 14)");
       minimumEnabled = 14;
       difficultyMultiplier = 1;
       break;
     //hard will disable all checkboxes
     case "hard":
-      $("#customize-h1").html("Current tasks (min 16)");
       $("#customize-menu").find("input").attr("disabled", "disabled");
       minimumEnabled = 16;
       words = hardWords;
       difficultyMultiplier = 1.2;
       break;
   }
+  $("#min-checkboxes").html(minimumEnabled)
 }
 
 //initiates a new game
 var start = function() {
+  createNewFrameOrder();
+  makeNewLevels();
   gameActive = true;
   if($("input[name='assist-s']").is(":checked")) {
     assistSelect = true;
@@ -315,12 +346,14 @@ var checkEnabledBoxes = function() {
   amtChecked = enabled;
   if(enabled === minimumEnabled) {
     $("#customize-menu > div").find("input:checked").attr("disabled", "disabled");
+    $("#min-checkboxes").addClass("maxed-out");
   } else if (minimumEnabled === 16) {
     $("#customize-menu").find("input").prop("checked", "checked");
     $("#customize-menu").find("input").attr("disabled", "disabled");
   } else {
     $("#customize-menu > div").find("input:not(.unplayed)").removeAttr("disabled");
     $("#customize-menu > div").find("input[name='easy-c']").attr("disabled", "disabled");
+    $("#min-checkboxes").removeClass("maxed-out");
   }
   $("input[name='easy-c']").attr("disabled", "disabled");
   $("input[name='easy-c']").prop("checked", "checked");
@@ -377,6 +410,7 @@ var disable = function(whichFrame) {
   frames[whichFrame].active = false;
   $("#frame" + whichFrame).addClass("disabled");
   $("#frame" + whichFrame).find("input").prop("disable", true);
+  $("#frame" + whichFrame).find("input").attr("val", "");
 }
 
 //updates all times. is called every 10ms by timeInterval
@@ -447,6 +481,28 @@ function findOccurrences(arr, val) {
     (arr[e] === val) && count++;
   }
   return count;
+}
+
+//shuffles an array
+//used for level randomization
+function shuffleArray(array) {
+    var counter = array.length, temp, index;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
 }
 
 //replaces a certain character in a string at an index.
