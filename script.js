@@ -407,6 +407,9 @@ var enable = function(whichFrame) {
     $("#frame" + whichFrame).removeClass("disabled");
     $("#frame" + whichFrame).find("input").prop("disable", false);
   }
+  else {
+    tasksTillNext = 1;
+  }
 }
 
 //disables a frame
@@ -717,7 +720,7 @@ var submitMult = function() {
 //n^2 game
 var currSqaure
 var chooseSquare = function() {
-  var num1 = Math.floor(Math.random()*levels[currLevel].maxMult(difficultyMultiplier));
+  var num1 = Math.floor(Math.random()*levels[currLevel].maxMult*difficultyMultiplier);
   currSquare = num1 * num1;
   $("#square-upper").html(num1 + "<sup>2</sup>");
 }
@@ -963,7 +966,7 @@ $(document).ready(function() {
     highscore = getCookie("highscore");
   }
 
-  $("#highscore").html("most tasks: " + highscore);
+  $("#highscore").html("highscore: " + highscore);
 
   //creates all the frames with random times
   for(var i = 0; i < 16; i++) {
