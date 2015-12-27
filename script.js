@@ -3,6 +3,7 @@ var frames = [];
 var gameActive = false;
 var timeInterval;
 var score = 0;
+var points = 0;
 var totalTime = 0;
 var currLevel = 0;
 var tasksTillNext = 100;
@@ -18,6 +19,8 @@ var hardWords = ["advice", "anger", "answer", "apple", "arithmetic", "badge", "b
 var minimumEnabled = 14;
 var highscore = 0;
 var playedFrames = "1000000000000000";
+var amtChecked = 16;
+var difficultyMultiplier = 1;
 
 levels = [];
 var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime) {
@@ -82,7 +85,7 @@ levels[4] = new Level(4, [7, 13], 3, 25, 10, 15, 1, 20, 15, 5);
 levels[5] = new Level(5, [10], 3, 25, 10, 15, 1, 20, 15, 2);
 levels[6] = new Level(6, [9], 3, 25, 11, 15, 1, 20, 15, 2);
 levels[7] = new Level(7, [6], 3, 30, 11, 15, 1, 25, 15, 2);
-levels[8] = new Level(8, [16], 3, 30, 12, 15, 1, 25, 15, 2);
+levels[8] = new Level(8, [15], 3, 30, 12, 15, 1, 25, 15, 2);
 levels[9] = new Level(9, [8], 3, 30, 12, 15, 1, 25, 15, 1);
 levels[10] = new Level(10, [11], 3, 40, 13, 15, 1, 30, 20, 1);
 levels[11] = new Level(11, [14], 3, 40, 13, 16, 1, 30, 15, 2);
@@ -191,19 +194,26 @@ var lose = function(timeTillMenu) {
       disable(i);
     }
   }, timeTillMenu);
+  points = (score*(amtChecked/16)*difficultyMultiplier).toFixed(0);
+  if(points === "1") {
+    $("#points").html(points + " point");
+  }
+  else {
+    $("#points").html(points + " points");
+  }
   if(score === 1) {
     $("#score").html("you accomplished 1 task in " + parseInt(totalTime) + "s");
   } else {
     $("#score").html("you accomplished " + score + " tasks in " + parseInt(totalTime) + "s");
   }
-  if(score > highscore) {
-    highscore = score;
+  if(points > highscore) {
+    highscore = points;
     setCookie("highscore", highscore, 99999);
   }
 
   setCookie("played", playedFrames, 99999);
   enableCheckboxesFromPF();
-  $("#highscore").html("most tasks: " + highscore);
+  $("#highscore").html("highscore: " + highscore);
   level = 0;
   clearInterval(timeInterval);
   $("input[name='easy-c']").attr("disabled", "disabled");
@@ -245,11 +255,13 @@ var setDifficulty = function(resetCheckboxes) {
       words = easyWords;
       $("#customize-h1").html("Current tasks (min 12)");
       minimumEnabled = 12;
+      difficultyMultiplier = 0.8;
       break;
     case "medium":
       words = mediumWords;
       $("#customize-h1").html("Current tasks (min 14)");
       minimumEnabled = 14;
+      difficultyMultiplier = 1;
       break;
     //hard will disable all checkboxes
     case "hard":
@@ -257,6 +269,7 @@ var setDifficulty = function(resetCheckboxes) {
       $("#customize-menu").find("input").attr("disabled", "disabled");
       minimumEnabled = 16;
       words = hardWords;
+      difficultyMultiplier = 1.2;
       break;
   }
 }
@@ -285,6 +298,7 @@ var start = function() {
   }
   currLevel = 0;
   score = 0;
+  points = 0;
   totalTime = 0;
   level = 0;
   levels[0].activate();
@@ -298,6 +312,7 @@ var start = function() {
 //otherwise enable all checkboxes other than the easy button one
 var checkEnabledBoxes = function() {
   var enabled = $("#customize-menu > div").find("input:checked").length;
+  amtChecked = enabled;
   if(enabled === minimumEnabled) {
     $("#customize-menu > div").find("input:checked").attr("disabled", "disabled");
   } else if (minimumEnabled === 16) {

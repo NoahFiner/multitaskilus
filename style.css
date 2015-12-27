@@ -330,16 +330,22 @@ input[type="checkbox"]:disabled + label {
   opacity: 1;
 }
 
-#score, #highscore {
+#score, #highscore, #points {
   top: auto !important;
   left: 50%;
   transform: translateX(-50%);
   -webkit-transform: translateX(-50%);
-  bottom: 4.5vh;
+  bottom: 10vh;
   font-size: 3vh !important;
   pointer-events: none;
   opacity: 0.75;
   position: absolute;
+}
+
+#points {
+  font-size: 4vh !important;
+  bottom: 4.5vh !important;
+  opacity: 1 !important;
 }
 
 #highscore {
