@@ -215,7 +215,7 @@ var setCookie = function(name, val, exdays) {
   var d = new Date();
   d.setTime(d.getTime() + (exdays*24*60*60*1000));
   var expires = "expires=" + d.toUTCString();
-  document.cookie = "; " + name + "=" + val + "; " + expires;
+  document.cookie = "" + name + "=" + val + "; " + expires;
 }
 
 var getCookie = function(name) {
@@ -871,6 +871,7 @@ if(getCookie("played") === "") {
 }
 
 var enableCheckboxesFromPF = function() {
+  playedFrames = playedFrames.replace(/=/g, "")
   for(var i = 0; i < 16; i++) {
     var framePlayed = playedFrames[i];
     if(framePlayed === "1") {
