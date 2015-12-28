@@ -337,7 +337,8 @@ var start = function() {
   totalTime = 0;
   level = 0;
   levels[0].activate();
-  $("#current-score").html(score + " tasks");
+  $("#current-score").html("0 tasks");
+  $("#current-points").html("0 points")
   $("#current-time").html("0 seconds");
 }
 
@@ -367,6 +368,13 @@ var checkEnabledBoxes = function() {
 var resetTime = function(whichFrame) {
   frames[whichFrame].resetTime();
   score += 1;
+  points = (score*(amtChecked/16)*difficultyMultiplier).toFixed(0);
+  if(points != 1) {
+    $("#current-points").html(points + " points");
+  }
+  else {
+    $("#current-points").html("1 point");
+  }
   if(score != 1) {
     $("#current-score").html(score + " tasks");
   } else {
@@ -465,13 +473,11 @@ var testScreen = function() {
     //if h/w ratio is greater than 0.6, then there is room for the restart,
     //score, and time elements on the bottom left.
     if(height/width >= 0.6) {
-      $("#current-score").css("display", "none");
-      $("#current-time").css("display", "none");
-      $("#restart-button").css("display", "none");
+      $("#current-score, #current-time,"
+      + "#restart-button, #current-points").css("display", "none");
     } else {
-      $("#current-score").css("display", "block");
-      $("#current-time").css("display", "block");
-      $("#restart-button").css("display", "block");
+      $("#current-score, #current-time,"
+      + "#restart-button, #current-points").css("display", "block");
     }
     $("#warning").removeClass("shown");
     $("#replay").removeClass("hidden");
@@ -802,12 +808,12 @@ var chooseBool = function() {
                     [Math.floor(Math.random()*19 + 1), Math.floor(Math.random()*19 + 1)]];
   }
   if(!fracNum1) {
-    num1 = (boolNums[0][0]/boolNums[0][1]).toFixed(3);
+    num1 = (boolNums[0][0]/boolNums[0][1]).toFixed(2);
   } else if(fracNum1) {
     num1 = boolNums[0][0] + "/" + boolNums[0][1];
   }
   if(!fracNum2) {
-    num2 = (boolNums[1][0]/boolNums[1][1]).toFixed(3);
+    num2 = (boolNums[1][0]/boolNums[1][1]).toFixed(2);
   } else if(fracNum2) {
     num2 = boolNums[1][0] + "/" + boolNums[1][1];
   }

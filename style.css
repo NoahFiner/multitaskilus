@@ -177,6 +177,17 @@ body {
   top: auto;
 }
 
+#difficulty:hover, #more-info:hover, #customize:hover {
+  right: calc(2.5vw - 2.5px) !important;
+}
+
+#difficulty:active, #more-info:active, #customize:active {
+  right: calc(2.5vw - 1px) !important;
+  border-bottom: 2px solid #225;
+  border-left: 1px solid #558;
+  background-color:
+}
+
 #customize {
   bottom: 5.25vw !important;
 }
@@ -195,6 +206,10 @@ body {
 #less-info {
   bottom: calc(100vh - 5vw) !important;
   right: 7.5vw !important;
+}
+
+#less-info:hover {
+  right: calc(7.5vw - 2.5px) !important;
 }
 
 #difficulty {
@@ -277,6 +292,7 @@ input[type="checkbox"]:checked + label span {
 
 input[type="checkbox"]:disabled + label {
   opacity: 0.5;
+  cursor: default !important;
 }
 
 #logo {
@@ -437,14 +453,18 @@ input[type="checkbox"]:disabled + label {
   left: 10px;
 }
 
-#current-score {
+#current-score, #current-points {
   font-size: 15px;
   font-weight: 900;
   color: white;
   opacity: 0.5;
   position: absolute;
-  bottom: 30px;
+  bottom: 50px;
   left: 10px;
+}
+
+#current-points {
+  bottom: 30px !important;
 }
 
 #restart-button, #pause-button {
@@ -452,7 +472,7 @@ input[type="checkbox"]:disabled + label {
   font-weight: 900;
   position: absolute;
   font-size: 15px;
-  bottom: 50px;
+  bottom: 70px;
   left: 10px;
   padding: 2.5px;
   padding-top: 0px;
