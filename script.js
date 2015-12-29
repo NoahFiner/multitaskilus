@@ -416,7 +416,7 @@ var enable = function(whichFrame) {
     $("#frame" + whichFrame).find("input").prop("disable", false);
   }
   else {
-    tasksTillNext = 1;
+    setTimeout(function() {tasksTillNext = 1;}, 100);
   }
 }
 
