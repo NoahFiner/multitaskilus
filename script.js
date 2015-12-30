@@ -964,6 +964,13 @@ var enableCheckboxesFromPF = function() {
   }
 }
 
+window.onload = function() {
+  $("#loading").removeClass("shown");
+  setTimeout(function() {
+    $("#loading").remove();
+  }, 500);
+}
+
 $(document).ready(function() {
   //highscore cookie setting
   if(getCookie("highscore") === "") {

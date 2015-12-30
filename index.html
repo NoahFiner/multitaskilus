@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <head>
+  <link href="style.css" rel="stylesheet" type="text/css"></link>
   <meta charset="utf-8">
-  <meta name="description" content="Don't relieve stress, create it with multitaskilus. Simply complete tasks before their times run out.">
+  <meta name="description" content="Don't relieve stress. Instead, create it with multitaskilus. Simply complete tasks before their times run out.">
   <meta name="author" content="Noah Finer">
   <meta name="keywords" content="multitaskilus,multitask,multitasking,game,games,fun,fun games,multitasking game,multitask game,stress,stressful,noahfiner">
   <title>multitaskilus</title>
@@ -9,7 +10,6 @@
   <script type="text/javascript" src="jquery/jqueryui.js"></script>
   <script type="text/javascript" src="script.js"></script>
   <link rel='shortcut icon' type='image/x-icon' href='favicon.ico'/>
-  <link href="style.css" rel="stylesheet" type="text/css"></link>
 </head>
 <body>
   <div id="everything">
@@ -19,6 +19,11 @@
     <p class="button" id="restart-button" onclick="pause(true)">restart</p>
     <p class="button" id="pause-button" onclick="pause(false)">&#9616;&#9616;</p>
     <div id="absolute-stuff">
+      <div id="loading" class="shown">
+        <div style="height: 100%; width: 100%; position: relative">
+          <h1>loading...</h1>
+        </div>
+      </div>
       <div id="customize-menu">
         <div style="height: 100%; width: 70vh; float: right; position: relative">
           <h1 id="customize-h1">Current tasks (min <span id="min-checkboxes">14</span>)</h1>
@@ -98,11 +103,12 @@
           <p>Think you can multitask well? Try out your luck in multitaskilus.</p>
           <p>You will be presented with some tasks to do. Each task has a timer on it.</p>
           <p>Just complete the tasks before their timers run out.</p>
+          <p>This game is spelled multitaskilus, not multitaskelus, by the way.</p>
           <h1 style="margin-top: 5vh">controls</h1>
           <p>Assisted selecting allows you to select text boxes by hovering over them.</p>
           <p>Difficulty only affects the length of words that need to be typed.</p>
           <p>Press enter to submit a task (unless it's pushing a button).</p>
-          <p>Make sure cookies are turned on to save your highscore.</p>
+          <p>Make sure cookies are turned on to save your progress.</p>
           <p style="margin-top: 5vh">multitaskilus was created by <a href="http://github.com/noahfiner" target="_blank">Noah Finer</a>.</p>
         </div>
       </div>

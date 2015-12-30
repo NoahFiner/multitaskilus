@@ -30,6 +30,7 @@ a:hover {
 
 body {
   background-color: black;
+
 }
 
 #everything {
@@ -59,12 +60,17 @@ body {
   line-height: 3vh;
 }
 
-#menu, #paused-menu, #customize-menu {
+#menu, #paused-menu, #customize-menu, #loading {
   width: 100%;
   height: 100%;
   position: absolute;
   pointer-events: none !important;
-  background-color: black;
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#45484d+0,000000+100;Black+3D+%231 */
+  background: rgb(69,72,77); /* Old browsers */
+  background: -moz-linear-gradient(-15deg,  rgba(29,32,37,1) 0%, rgba(0,0,0,1) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-15deg,  rgba(29,32,37,1) 0%,rgba(0,0,0,1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(105deg,  rgba(29,32,37,1) 0%,rgba(0,0,0,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
   color: white;
   opacity: 0;
   transition: all 0.5s;
@@ -73,12 +79,22 @@ body {
 
 #customize-menu {
   cursor: pointer !important;
-  background-color: rgba(0, 0, 0, 0.75) !important;
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#45484d+0,000000+100;Black+3D+%231 */
+  background: rgb(69,72,77); /* Old browsers */
+  background: -moz-linear-gradient(-15deg,  rgba(69,72,77,0.75) 0%, rgba(0,0,0,0.9) 100%) !important; /* FF3.6-15 */
+  background: -webkit-linear-gradient(-15deg,  rgba(69,72,77,0.75) 0%,rgba(0,0,0,0.9) 100%) !important; /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(105deg,  rgba(69,72,77,0.75) 0%,rgba(0,0,0,0.9) 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=1 ) !important; /* IE6-9 fallback on horizontal gradient */
 }
 
 #customize-menu > div {
   cursor: default !important;
-  background-color: black;
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#45484d+0,000000+100;Black+3D+%231 */
+  background: rgb(49,52,57); /* Old browsers */
+  background: -moz-linear-gradient(-15deg,  rgba(49,52,57,1) 0%, rgba(0,0,0,1) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-15deg,  rgba(49,52,57,1) 0%,rgba(0,0,0,1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(105deg,  rgba(49,52,57,1) 0%,rgba(0,0,0,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
   border-left: 2px solid rgba(100, 100, 125, 1);
   z-index: 1;
   overflow-y: scroll;
@@ -103,6 +119,19 @@ body {
 
 #menu > div > *, #paused-menu > div > *, #customize-menu > div > * {
   pointer-events: none !important;
+}
+
+#loading > div > h1 {
+  font-size: 10vh;
+  position: absolute;
+  bottom: 2.5vw;
+  left: 2.5vw;
+}
+
+#loading.shown {
+  z-index:3249572983;
+  opacity: 1;
+  pointer-events: auto !important;
 }
 
 #customize-menu > div > h1 {
