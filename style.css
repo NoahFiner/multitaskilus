@@ -30,7 +30,12 @@ a:hover {
 
 body {
   background-color: black;
-
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#45484d+0,000000+100;Black+3D+%231 */
+  background: rgb(69,72,77); /* Old browsers */
+  background: -moz-linear-gradient(180deg,  rgba(29,32,37,1) 0%, rgba(0,0,0,1) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(180deg,  rgba(29,32,37,1) 0%,rgba(0,0,0,1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(180deg,  rgba(29,32,37,1) 0%,rgba(0,0,0,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 
 #everything {
@@ -91,9 +96,9 @@ body {
   cursor: default !important;
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#45484d+0,000000+100;Black+3D+%231 */
   background: rgb(49,52,57); /* Old browsers */
-  background: -moz-linear-gradient(-15deg,  rgba(49,52,57,1) 0%, rgba(0,0,0,1) 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(-15deg,  rgba(49,52,57,1) 0%,rgba(0,0,0,1) 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(105deg,  rgba(49,52,57,1) 0%,rgba(0,0,0,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  background: -moz-linear-gradient(-15deg,  rgba(29,32,37,1) 0%, rgba(0,0,0,1) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-15deg,  rgba(29,32,37,1) 0%,rgba(0,0,0,1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(105deg,  rgba(29,32,37,1) 0%,rgba(0,0,0,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
   border-left: 2px solid rgba(100, 100, 125, 1);
   z-index: 1;
@@ -119,13 +124,6 @@ body {
 
 #menu > div > *, #paused-menu > div > *, #customize-menu > div > * {
   pointer-events: none !important;
-}
-
-#loading > div > h1 {
-  font-size: 10vh;
-  position: absolute;
-  bottom: 2.5vw;
-  left: 2.5vw;
 }
 
 #loading.shown {
@@ -372,16 +370,23 @@ input[type="checkbox"]:disabled + label {
   pointer-events: none;
 }
 
-#warning {
+.warning {
   color: red !important;
-  top: 40vh !important;
-  font-size: 5vw !important;
-  opacity: 0;
+  bottom: 2vw;
+  left: 2vw;
+  font-size: 2vw;
+  text-align: center;
+  opacity: 0 !important;
   pointer-events: none !important;
 }
 
-#warning.shown {
-  opacity: 1;
+.warning.shown {
+  opacity: 1 !important;
+}
+
+#warning {
+  font-size: 5vw;
+  margin-top: 40vh;
 }
 
 #score, #highscore, #points {
@@ -469,7 +474,7 @@ input[type="checkbox"]:disabled + label {
   margin-left: auto;
   margin-right: auto;
   border: 1px solid #222;
-  background-color: #111;
+  background-color: rgba(0, 0, 0, 0.25);
 }
 
 #current-time {
@@ -611,8 +616,8 @@ input[type="checkbox"]:disabled + label {
 
 .frame.disabled {
   opacity: 1;
-  transform: scale(0);
-  -webkit-transform: scale(0);
+  transform: scale(0) !important;
+  -webkit-transform: scale(0) !important;
   pointer-events: none !important;
 }
 
@@ -667,7 +672,9 @@ h1 {
 }
 
 .frame.urgent1 {
-  box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.75) !important;
+  transform: scale(1.05);
+  -webkit-transform: scale(1.05);
+  box-shadow: 0 0 10px 2.5px rgba(150, 0, 0, 0.75) !important;
   z-index: 100;
   background-color: #FFC2C2;
 }
@@ -683,7 +690,9 @@ h1 {
 }
 
 .frame.urgent2 {
-  box-shadow: 0 0 20px 15px rgba(255, 0, 0, 0.75) !important;
+  transform: scale(1.075);
+  -webkit-transform: scale(1.075s);
+  box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.75) !important;
   z-index: 1000;
   background-color: #FF5C5C;
 }

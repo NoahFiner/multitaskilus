@@ -162,7 +162,7 @@ var Frame = function(num, desc, extendDesc, time, active) {
     $(".frame-inner:not(#frame" + this.num + " .frame-inner)").addClass("loss");
     for(var i = 0; i < 16; i++) {
       if(i != this.num) {
-        var randomRotation = Math.floor(Math.random()*100 - 50);
+        var randomRotation = Math.floor(Math.random()*720 - 360);
         $("#frame" + i + " .frame-inner").attr("style",
             "transform: transform: scale(1.1) rotate("+randomRotation+"deg);" +
             "-webkit-transform: scale(1.1) rotate("+randomRotation+"deg)");
@@ -465,10 +465,13 @@ var screenValid = true;
 var testScreen = function() {
   var height = window.innerHeight;
   var width = window.innerWidth;
-  if(width <= height*1.33) {
-    $("#warning").addClass("shown");
-    $("#replay").addClass("hidden");
-    screenValid = false;
+  if(width <= height*1.42) {
+    if(!gameActive) {
+      //i was lazy so i plopped .warning into the loading screen
+      $(".warning, #loading").addClass("shown");
+      $("#replay").addClass("hidden");
+      screenValid = false;
+    }
   } else {
     //if h/w ratio is greater than 0.6, then there is room for the restart,
     //score, and time elements on the bottom left.
@@ -479,7 +482,7 @@ var testScreen = function() {
       $("#current-score, #current-time,"
       + "#restart-button, #current-points").css("display", "block");
     }
-    $("#warning").removeClass("shown");
+    $(".warning, #loading").removeClass("shown");
     $("#replay").removeClass("hidden");
     screenValid = true;
   }
@@ -966,9 +969,8 @@ var enableCheckboxesFromPF = function() {
 
 window.onload = function() {
   $("#loading").removeClass("shown");
-  setTimeout(function() {
-    $("#loading").remove();
-  }, 500);
+  //make sure the screen size works
+  testScreen();
 }
 
 $(document).ready(function() {
@@ -1004,8 +1006,6 @@ $(document).ready(function() {
   $(window).resize(function() {
     testScreen();
   });
-  //and also now
-  testScreen();
 
   //.button-game is the left/right button. submitButton handles everything with
   //their ids passed

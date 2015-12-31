@@ -21,7 +21,9 @@
     <div id="absolute-stuff">
       <div id="loading" class="shown">
         <div style="height: 100%; width: 100%; position: relative">
-          <h1>loading...</h1>
+          <h1 id="warning" class="warning">your screen width is too small</h1>
+          <p class="warning">try decreasing your screen's height or increasing its width</p>
+          <p class="warning">multitaskilus is currently not mobile-friendly, sorry :(</p>
         </div>
       </div>
       <div id="customize-menu">
@@ -92,7 +94,6 @@
           <h1 class="button" id="customize" onclick="$('#customize-menu').addClass('shown')">customize tasks</h1>
           <h1 class="button" id="more-info" onclick="$('#menu').animate({scrollTop: window.innerHeight}, 1000)">more info</h1>
           <h1 id="replay">play</h1>
-          <h1 id="warning">your screen width is too small</h1>
           <h1 id="score"></h1>
           <h1 id="points"></h1>
           <h1 id="highscore">most tasks: 6969</h1>
