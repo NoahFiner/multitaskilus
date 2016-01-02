@@ -559,7 +559,6 @@ input[type="checkbox"]:disabled + label {
   border: 1px solid #888;
   top: 0;
   left: 0;
-  background-image: url("grid.png");
   box-shadow: 0 0 0 transparent;
   outline: 3px solid transparent;
   transform: scale(1);
@@ -662,6 +661,12 @@ h1 {
   text-align: center;
   margin-left: 2vh;
   vertical-align: middle;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   transition: all 0.25s;
   -webkit-transition: all 0.25s;
 }
@@ -723,6 +728,12 @@ h1 {
 }
 
 .easy-reset-button {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   width: 15vh;
   height: 15vh;
   background-color: #FF0000;
