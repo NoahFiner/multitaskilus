@@ -240,7 +240,7 @@ var lose = function(timeTillMenu) {
   }
   if(parseInt(points) > parseInt(highscore)) {
     highscore = points;
-    localStorage.highscore = higscore;
+    setCookie("highscore", highscore, 99999);
   }
 
   setCookie("played", playedFrames, 99999);
@@ -978,11 +978,11 @@ $(document).ready(function() {
   //also checks all checkboxes
   setDifficulty(true);
 
-  //highscore localstorage setting
-  if(!localStorage.highscore) {
-    localStorage.setItem("highscore", "0");
+  //highscore cookie setting
+  if(getCookie("highscore") === "") {
+    setCookie("highscore", "0", 99999);
   } else {
-    highscore = localStorage.getItem("highscore");
+    highscore = getCookie("highscore");
   }
 
   $("#highscore").html("highscore: " + highscore);
