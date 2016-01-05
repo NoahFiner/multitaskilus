@@ -240,7 +240,7 @@ var lose = function(timeTillMenu) {
   }
   if(parseInt(points) > parseInt(highscore)) {
     highscore = points;
-    setCookie("highscore", highscore, 99999);
+    localStorage.highscore = higscore;
   }
 
   setCookie("played", playedFrames, 99999);
@@ -974,11 +974,15 @@ window.onload = function() {
 }
 
 $(document).ready(function() {
-  //highscore cookie setting
-  if(getCookie("highscore") === "") {
-    setCookie("highscore", "0", 99999);
+  //sets the difficulty in case the browser saves the difficulty to something
+  //also checks all checkboxes
+  setDifficulty(true);
+
+  //highscore localstorage setting
+  if(!localStorage.highscore) {
+    localStorage.setItem("highscore", "0");
   } else {
-    highscore = getCookie("highscore");
+    highscore = localStorage.getItem("highscore");
   }
 
   $("#highscore").html("highscore: " + highscore);
