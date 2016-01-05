@@ -265,8 +265,9 @@ var getCookie = function(name) {
   var cookieArray = document.cookie.split(';');
   for(var i = 0; i < cookieArray.length; i++) {
     if(cookieArray[i].search(findString) != -1) {
-      return cookieArray[i].substr(findString.length,
-                                  cookieArray[i].length - findString.length);
+      return (cookieArray[i].substr(findString.length,
+                                  cookieArray[i].length - findString.length)
+                                  .replace(/=/g, ""));
     }
   }
   return "";
