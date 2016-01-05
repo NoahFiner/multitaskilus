@@ -860,7 +860,7 @@ var chooseHold = function() {
 var pressHold = function() {
   $(".hold-button").animate({
     backgroundColor: "#55dd55 !important"
-  }, (origHoldTime*1000));
+  }, (origHoldTime*1000), "linear");
   holdInterval = setInterval(function() {
     holdTime -= 0.01;
     holdTime = holdTime.toFixed(2);
