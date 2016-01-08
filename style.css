@@ -572,7 +572,7 @@ input[type="checkbox"]:disabled + label {
 #select-shower {
   outline: 5px solid blue !important;
   background-color: transparent !important;
-  opacity: 1;
+  opacity: 0;
   pointer-events: none !important;
   border: none !important;
   z-index: 1;
