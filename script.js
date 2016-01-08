@@ -23,6 +23,7 @@ var amtChecked = 16;
 var difficultyMultiplier = 1;
 var frameOrder = [];
 var difficultyTimeMultiplier = 1;
+var selectedFrame = 0;
 
 levels = [];
 var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime) {
@@ -49,7 +50,7 @@ var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repe
     resetAll();
     currLevel = this.num;
     tasksTillNext = this.tasksTillNext;
-    if (this.num === 0) {
+    if(this.num === 0) {
       currLevel = 0;
       score = 0;
       totalTime = 0;
@@ -132,7 +133,9 @@ var Frame = function(num, desc, extendDesc, time, active) {
   this.time = time;
   this.origTime = time;
   this.active = active;
+  this.select = false;
   this.played = false;
+  this.position = [0, 0];
   if(this.active === false) {
     $("#frame" + this.num).addClass("disabled");
   }
@@ -337,7 +340,14 @@ var start = function() {
   points = 0;
   totalTime = 0;
   level = 0;
+  selectedFrame = 0;
   levels[0].activate();
+  activeLocations = [[0, 0, 0, 0],
+                        [0, 0, 0, 0],
+                        [0, 0, 0, 0],
+                        [0, 0, 0, 0]];
+  selectedLocation = [0, 0];
+  stickSelected = false;
   $("#current-score").html("0 tasks");
   $("#current-points").html("0 points")
   $("#current-time").html("0 seconds");
@@ -405,6 +415,8 @@ var removeTime = function(whichFrame) {
 
 //enables a frame if its checkbox is checked
 var enable = function(whichFrame) {
+  activeLocations[frames[whichFrame].position[0],
+                  frames[whichFrame].position[1]] = 1;
   var currName = frames[whichFrame].desc;
   if($("input[name='" + currName + "-c']").is(":checked")) {
     frames[whichFrame].active = true;
@@ -492,12 +504,28 @@ var testScreen = function() {
 //finds the amount of times a value occurs in an array.
 //used for one of the tasks
 function findOccurrences(arr, val) {
-  var e, j,
-    count = 0;
+  var e, j, count = 0;
   for (e = 0, j = arr.length; e < j; e++) {
     (arr[e] === val) && count++;
   }
   return count;
+}
+
+//searches for a value in a multidimensional array.
+//returns [index1, index2] of the first occurrance
+//will be [y, x]!!!!
+//[-1, -1] is a failure
+function searchMultiArray(arr, val) {
+  var result = [-1, -1];
+  for(var i = 0; i < arr.length; i++) {
+    for(var j = 0; j < arr[i].length; j++) {
+      if(arr[i][j] === val) {
+        result = [i, j];
+        return result
+      }
+    }
+  }
+  return result;
 }
 
 //shuffles an array
@@ -543,7 +571,7 @@ var shuffle = function() {
   frameLocations = [[20, 20, 20, 20],
                     [20, 20, 20, 20],
                     [20, 20, 20, 20],
-                    [20, 20, 20, 20]]
+                    [20, 20, 20, 20]];
   for(var i = 0; i < 16; i++) {
     var row = Math.floor(Math.random()*4);
     while(findOccurrences(frameLocations[row], 20) === 0) {
@@ -554,6 +582,7 @@ var shuffle = function() {
       column = Math.floor(Math.random()*4);
     }
     frameLocations[row][column] = i;
+    frames[i].position = [row, column];
     $("#frame" + i).css("top", (row*25) + "%");
     $("#frame" + i).css("left", (column*25) + "%");
   }
@@ -889,6 +918,7 @@ var releaseHold = function() {
 
 //mashing button game
 var mashAmt = 20;
+var mashSelectedTimeout;
 var chooseMash = function() {
   mashAmt = Math.floor(Math.random()*(levels[currLevel].mashMax - 10)*difficultyMultiplier) + 10;
   $("#mash-amt").html(mashAmt);
@@ -951,6 +981,20 @@ var submitRemember = function() {
   }
 }
 
+//easy button
+var easySelectedTimeout;
+var clickEasyButton = function() {
+  if(!easyButtonDisabled) {
+    resetTime(0);
+    easyButtonDisabled = true;
+    $(".easy-reset-button:not(.mash-button, .hold-button)").addClass("disabled");
+    easyButtonTimeout = setTimeout(function() {
+      easyButtonDisabled = false;
+      $(".easy-reset-button:not(.mash-button, .hold-button)").removeClass("disabled");
+    }, 5000);
+  }
+}
+
 //played cookie setting
 if(getCookie("played") === "") {
   setCookie("played", "0000000000000000", 99999);
@@ -967,6 +1011,121 @@ var enableCheckboxesFromPF = function() {
     }
   }
 }
+
+
+//arrow key assisted selecting stuff
+
+var activeLocations = [[0, 0, 0, 0],
+                      [0, 0, 0, 0],
+                      [0, 0, 0, 0],
+                      [0, 0, 0, 0]];
+var selectedLocation = [0, 0];
+var stickSelected = false;
+
+//should do [-1, 0]
+var selectUp = function() {
+  if(selectedLocation[0] > 0) {
+    selectedLocation[0]--;
+    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]]);
+  }
+  console.log("went up");
+  console.log(selectedLocation);
+}
+
+//should do [+1, 0]
+var selectDown = function() {
+  if(selectedLocation[0] < 3) {
+    selectedLocation[0]++;
+    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]]);
+  }
+  console.log("went down");
+  console.log(selectedLocation);
+}
+
+//should do [0, -1]
+var selectLeft = function() {
+  if(selectedLocation[1] > 0) {
+    selectedLocation[1]--;
+    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]]);
+  }
+  console.log("went left");
+  console.log(selectedLocation);
+}
+
+//should do [0, +1]
+var selectRight = function() {
+  if(selectedLocation[1] < 3) {
+    selectedLocation[1]++;
+    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]]);
+  }
+  console.log("went right");
+  console.log(selectedLocation);
+}
+
+var selectShowerFadeTimeout;
+var selectDirection = function(keycode) {
+  switch(keycode) {
+    case 38:
+      selectUp();
+      break;
+    case 40:
+      selectDown();
+      break;
+    case 37:
+      selectLeft();
+      break;
+    case 39:
+      selectRight();
+      break;
+  }
+  $("#select-shower").stop();
+  $("#select-shower").css("opacity", "1");
+  clearTimeout(selectShowerFadeTimeout);
+  selectShowerFadeTimeout = setTimeout(function() {
+    $("#select-shower").animate({
+      opacity: 0
+    }, 1000, "linear");
+  }, 1000);
+  $("#select-shower").css("top", (selectedLocation[0]*25) + "%");
+  $("#select-shower").css("left", (selectedLocation[1]*25) + "%");
+}
+
+var selectFrame = function(num) {
+  if(assistSelect && frames[num].active === true) {
+    for(i = 0; i < 16; i++) {
+      unselectFrame(i);
+    }
+    $("input").blur();
+    if($("#frame" + num).find("input").length > 0) {
+      $("#frame" + num).find("input").focus();
+      $("#frame" + num).find("input").select();
+    }
+    $("#frame" + num).addClass("selected");
+    frames[num].select = true;
+  }
+}
+
+var unselectFrame = function(num) {
+  if(assistSelect) {
+    $(".frame").removeClass("selected");
+    $("#frame" + num).children("input").blur();
+  }
+  for(i = 0; i < 16; i++) {
+    frames[i].select = false;
+  }
+}
+
+var clickButtonAnimation = function(selector) {
+  $(selector).addClass("active");
+  setTimeout(function() {
+    $(selector).removeClass("active");
+  }, 100);
+}
+
+
+//keydown variable
+var allowed = true;
+var upAllowed = false;
 
 window.onload = function() {
   $("#loading").removeClass("shown");
@@ -1042,34 +1201,27 @@ $(document).ready(function() {
   //give it an id, so oh well
   //don't kill me please
   $(".easy-reset-button:not(.mash-button, .hold-button)").click(function() {
-    if(!easyButtonDisabled) {
-      resetTime(0);
-      easyButtonDisabled = true;
-      $(".easy-reset-button:not(.mash-button, .hold-button)").addClass("disabled");
-      easyButtonTimeout = setTimeout(function() {
-        easyButtonDisabled = false;
-        $(".easy-reset-button:not(.mash-button, .hold-button)").removeClass("disabled");
-      }, 5000);
-    }
+    clickEasyButton();
   });
 
   //assisting selecting gets all those inputs selected
   //when you hover over a frame
   $(".frame-inner").mouseenter(function() {
-    if(assistSelect) {
-      if($(this).find("input").length > 0) {
-        $(this).find("input").focus();
-        $(this).find("input").select();
-        $(this).parent().addClass("selected");
-      }
+    var hoveredNum = $(this).parent().attr("id").charAt(5);
+    if($(this).parent().attr("id").length === 7) {
+      hoveredNum = parseInt($(this).parent().attr("id").charAt(5))*10
+                    + parseInt($(this).parent().attr("id").charAt(6));
     }
+    selectFrame(hoveredNum);
   });
 
   $(".frame-inner").mouseleave(function() {
-    if(assistSelect) {
-      $(".frame").removeClass("selected");
-      $(this).children("input").blur();
+    var hoveredNum = $(this).parent().attr("id").charAt(5);
+    if($(this).parent().attr("id").length === 7) {
+      hoveredNum = parseInt($(this).parent().attr("id").charAt(5))*10
+                    + parseInt($(this).parent().attr("id").charAt(6));
     }
+    unselectFrame(hoveredNum);
   });
 
   $(".input").focus(function() {
@@ -1137,6 +1289,52 @@ $(document).ready(function() {
       else if($("input[name='place-input']").is(":focus")) {
         submitPlace();
       }
+      else if($("#frame9").hasClass("selected")) {
+        pressMash();
+        clickButtonAnimation(".mash-button");
+      }
+      else if($("#frame0").hasClass("selected")) {
+        clickEasyButton();
+        clickButtonAnimation(".easy-button");
+      }
     }
+  });
+  //.keypress ignores arrow keys :(
+  $(document).keydown(function(e) {
+    if(e.which == 37 || e.which == 38 || e.which == 39 || e.which == 40) {
+      selectDirection(e.which);
+    }
+    if(e.which == 13) {
+      upAllowed = true;
+      if (e.repeat != undefined) {
+        allowed = !e.repeat;
+      }
+      if (!allowed) return;
+      allowed = false;
+      console.log("key down")
+      if($("#frame12").hasClass("selected")) {
+        $(".hold-button").addClass("active");
+        pressHold();
+      }
+    }
+    $(document).keyup(function(e) {
+      allowed = true;
+      if (e.repeat != undefined) {
+        upAllowed = !e.repeat;
+      }
+      if (!upAllowed) return;
+      upAllowed = false;
+      console.log("key up")
+      if(e.which == 13) {
+        if($(".hold-button").hasClass("active")) {
+          releaseHold();
+          $(".hold-button").removeClass("active");
+        }
+      }
+    });
+    $(document).focus(function(e) {
+      allowed = true;
+      upAllowed = false;
+    })
   });
 });
