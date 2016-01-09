@@ -663,6 +663,13 @@ input[type="checkbox"]:disabled + label {
   -webkit-transition: background-color 1ms, transform 0.25s, -webkit-transform 0.25s;
 }
 
+.frame.nopress .button, .frame.nopress .button-game {
+  opacity: 0.5 !important;
+  transform: scale(0.8) !important;
+  -webkit-transform: scale(0.8) !important;
+  pointer-events: none !important;
+}
+
 .frame.disabled {
   opacity: 1;
   transform: scale(0) !important;

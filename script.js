@@ -347,10 +347,12 @@ var start = function() {
   selectedFrame = 0;
   levels[0].activate();
   activeLocations = [[0, 0, 0, 0],
-                        [0, 0, 0, 0],
-                        [0, 0, 0, 0],
-                        [0, 0, 0, 0]];
-  selectedLocation = [0, 0];
+                     [0, 0, 0, 0],
+                     [0, 0, 0, 0],
+                     [0, 0, 0, 0]];
+  selectedLocation = frames[0].position;
+  $("#select-shower").css("top", (selectedLocation[0]*25) + "%");
+  $("#select-shower").css("left", (selectedLocation[1]*25) + "%");
   stickSelected = false;
   $("#current-score").html("0 tasks");
   $("#current-points").html("0 points")
@@ -1060,43 +1062,59 @@ var activeLocations = [[0, 0, 0, 0],
                       [0, 0, 0, 0],
                       [0, 0, 0, 0],
                       [0, 0, 0, 0]];
-var selectedLocation = [0, 0];
+var selectedLocation;
 var stickSelected = false;
 
 //should do [-1, 0]
 var selectUp = function() {
   if(selectedLocation[0] > 0) {
+    for(i = 0; i < 16; i++) {
+      unselectFrame(i);
+      $("input").blur();
+    }
     selectedLocation[0]--;
-    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
-                "keyboard");
   }
+  selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
+              "keyboard");
 }
 
 //should do [+1, 0]
 var selectDown = function() {
   if(selectedLocation[0] < 3) {
+    for(i = 0; i < 16; i++) {
+      unselectFrame(i);
+      $("input").blur();
+    }
     selectedLocation[0]++;
-    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
-                "keyboard");
   }
+  selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
+              "keyboard");
 }
 
 //should do [0, -1]
 var selectLeft = function() {
   if(selectedLocation[1] > 0) {
+    for(i = 0; i < 16; i++) {
+      unselectFrame(i);
+      $("input").blur();
+    }
     selectedLocation[1]--;
-    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
-                "keyboard");
   }
+  selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
+              "keyboard");
 }
 
 //should do [0, +1]
 var selectRight = function() {
   if(selectedLocation[1] < 3) {
+    for(i = 0; i < 16; i++) {
+      unselectFrame(i);
+      $("input").blur();
+    }
     selectedLocation[1]++;
-    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
-                "keyboard");
   }
+  selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
+              "keyboard");
 }
 
 var selectShowerFadeTimeout;
@@ -1181,6 +1199,8 @@ window.onload = function() {
   //make sure the screen size works
   testScreen();
 }
+
+var doubleButtonAllowed = true;
 
 $(document).ready(function() {
   //sets the difficulty in case the browser saves the difficulty to something
@@ -1359,34 +1379,57 @@ $(document).ready(function() {
       }
     }
     //'1' key, should press left button
-    if(e.which == 49) {
-      if($("#frame11").hasClass("selected")) {
-        submitBool("bool-true");
-        clickButtonAnimation("#bool-true");
+    if(doubleButtonAllowed) {
+      if(e.which == 49) {
+        if($("#frame11").hasClass("selected")) {
+          doubleButtonAllowed = false;
+          setTimeout(function() {
+            doubleButtonAllowed = true;
+            $("#frame11, #frame7").removeClass("nopress");
+          }, 1000);
+          $("#frame11, #frame7").addClass("nopress");
+          submitBool("bool-true");
+          clickButtonAnimation("#bool-true");
+        }
+        else if($("#frame7").hasClass("selected")) {
+          doubleButtonAllowed = false;
+          setTimeout(function() {
+            doubleButtonAllowed = true;
+            $("#frame11, #frame7").removeClass("nopress");
+          }, 1000);
+          $("#frame11, #frame7").addClass("nopress");
+          submitButton("button-left");
+          clickButtonAnimation("#button-left");
+        }
       }
-      else if($("#frame7").hasClass("selected")) {
-        submitButton("button-left");
-        clickButtonAnimation("#button-left");
-      }
-    }
-    //'2' key, shoud press right button
-    if(e.which == 50) {
-      if($("#frame11").hasClass("selected")) {
-        submitBool("bool-false");
-        clickButtonAnimation("#bool-false");
-      }
-      else if($("#frame7").hasClass("selected")) {
-        submitButton("button-right");
-        clickButtonAnimation("#button-right");
+      //'2' key, shoud press right button
+      if(e.which == 50) {
+        if($("#frame11").hasClass("selected")) {
+          doubleButtonAllowed = false;
+          setTimeout(function() {
+            doubleButtonAllowed = true;
+            $("#frame11, #frame7").removeClass("nopress");
+          }, 1000);
+          $("#frame11, #frame7").addClass("nopress");
+          submitBool("bool-false");
+          clickButtonAnimation("#bool-false");
+        }
+        else if($("#frame7").hasClass("selected")) {
+          doubleButtonAllowed = false;
+          setTimeout(function() {
+            doubleButtonAllowed = true;
+            $("#frame11, #frame7").removeClass("nopress");
+          }, 1000);
+          $("#frame11, #frame7").addClass("nopress");
+          submitButton("button-right");
+          clickButtonAnimation("#button-right");
+        }
       }
     }
   });
   //.keypress ignores arrow keys :(
   $(document).keydown(function(e) {
     if(e.which == 37 || e.which == 38 || e.which == 39 || e.which == 40) {
-      for(i = 0; i < 16; i++) {
-        unselectFrame(i);
-      }
       selectDirection(e.which);
     }
     if(e.which == 13) {
