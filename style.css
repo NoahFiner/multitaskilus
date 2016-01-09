@@ -576,8 +576,47 @@ input[type="checkbox"]:disabled + label {
   pointer-events: none !important;
   border: none !important;
   z-index: 1;
-  transition: all 0.25s, opacity 0.1s;
-  -webkit-transition: all 0.25s, opacity 0.1s;
+  transition: all 0.1s, opacity 0.025s;
+  -webkit-transition: all 0.1s, opacity 0.025s;
+}
+
+#tip-outer {
+  outline: 1px solid white;
+  background-color: rgba(0, 0, 0, 0.75);
+  opacity: 0;
+  height: auto;
+  width: 15vw;
+  position: absolute;
+  top: 2.5vw;
+  right: 2.5vw;
+  padding: 10px;
+  z-index: 1000000;
+  transition: opacity 0.5s;
+}
+
+#tip {
+  color: white;
+  font-size: 20px;
+  text-align: left;
+}
+
+#tip-close {
+  cursor: pointer;
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  top: 2.5px;
+  left: calc(15vw - 2.5px);
+}
+
+#tip-close:hover {
+  color: rgba(255, 200, 200, 1);
+}
+
+#tip-outer.shown {
+  opacity: 1;
 }
 
 .frame-inner {
@@ -1016,7 +1055,8 @@ sup, sub {
   -webkit-transform: scale(1.1);
 }
 
-.button-game:active, .easy-reset-button:active, .easy-reset-button.active {
+.button-game:active, .button-game.active,
+.easy-reset-button:active, .easy-reset-button.active {
   transform: scale(0.9);
   -webkit-transform: scale(0.9);
   background-color: #DD0000;

@@ -230,6 +230,9 @@ var lose = function(timeTillMenu) {
     }
   }, timeTillMenu);
   points = (score*(amtChecked/16)*difficultyMultiplier).toFixed(0);
+  $("#menu").animate({
+    scrollTop: 0
+  }, 1);
   if(points === "1") {
     $("#points").html(points + " point");
   }
@@ -318,6 +321,7 @@ var start = function() {
   gameActive = true;
   if($("input[name='assist-s']").is(":checked")) {
     assistSelect = true;
+    createTip(5000, 0);
   } else {
     assistSelect = false;
   }
@@ -499,6 +503,12 @@ var testScreen = function() {
     $("#replay").removeClass("hidden");
     screenValid = true;
   }
+}
+
+//replaces character in string at an index
+//used for tips
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
 }
 
 //finds the amount of times a value occurs in an array.
@@ -1013,6 +1023,37 @@ var enableCheckboxesFromPF = function() {
 }
 
 
+//tips
+var tipMessages = ["assisted selecting allows you to select inputs without clicking, but just hovering",
+                  "try using the arrow keys to select boxes",
+                  "press enter to press a single button",
+                  "use 1 and 2 to select left/right buttons in a frame"];
+
+var tipActive = false;
+var tipFadeTimeout;
+var seenTips = "0000";
+
+//duration should be in ms
+//tipNum should be location in tipMessages (0-3)
+var createTip = function(duration, tipNum) {
+  if(!tipActive && seenTips.charAt(tipNum) === '0') {
+    tipActive = true;
+    seenTips = seenTips.replaceAt(tipNum, '1');
+    setCookie("tips", seenTips, 99999);
+    $("#tip-outer").addClass("shown");
+    $("#tip").html(tipMessages[tipNum]);
+    tipFadeTimeout = setTimeout(function() {
+      destroyTip();
+    }, duration);
+  }
+}
+
+var destroyTip = function() {
+  clearTimeout(tipFadeTimeout);
+  $("#tip-outer").removeClass("shown");
+  tipActive = false;
+}
+
 //arrow key assisted selecting stuff
 
 var activeLocations = [[0, 0, 0, 0],
@@ -1026,40 +1067,36 @@ var stickSelected = false;
 var selectUp = function() {
   if(selectedLocation[0] > 0) {
     selectedLocation[0]--;
-    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]]);
+    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
+                "keyboard");
   }
-  console.log("went up");
-  console.log(selectedLocation);
 }
 
 //should do [+1, 0]
 var selectDown = function() {
   if(selectedLocation[0] < 3) {
     selectedLocation[0]++;
-    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]]);
+    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
+                "keyboard");
   }
-  console.log("went down");
-  console.log(selectedLocation);
 }
 
 //should do [0, -1]
 var selectLeft = function() {
   if(selectedLocation[1] > 0) {
     selectedLocation[1]--;
-    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]]);
+    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
+                "keyboard");
   }
-  console.log("went left");
-  console.log(selectedLocation);
 }
 
 //should do [0, +1]
 var selectRight = function() {
   if(selectedLocation[1] < 3) {
     selectedLocation[1]++;
-    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]]);
+    selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
+                "keyboard");
   }
-  console.log("went right");
-  console.log(selectedLocation);
 }
 
 var selectShowerFadeTimeout;
@@ -1090,7 +1127,8 @@ var selectDirection = function(keycode) {
   $("#select-shower").css("left", (selectedLocation[1]*25) + "%");
 }
 
-var selectFrame = function(num) {
+//way should be "mouse" or "keyboard"
+var selectFrame = function(num, way) {
   if(assistSelect && frames[num].active === true) {
     for(i = 0; i < 16; i++) {
       unselectFrame(i);
@@ -1103,10 +1141,19 @@ var selectFrame = function(num) {
     $("#frame" + num).addClass("selected");
     frames[num].select = true;
   }
+  if(way === "keyboard" && frames[num].active === true) {
+    if(num === 11 || num === 7) {
+      createTip(5000, 3);
+    }
+    if(num === 0 || num === 9 || num === 12) {
+      createTip(5000, 2);
+    }
+  }
 }
 
 var unselectFrame = function(num) {
   if(assistSelect) {
+    createTip(5000, 1);
     $(".frame").removeClass("selected");
     $("#frame" + num).children("input").blur();
   }
@@ -1116,10 +1163,12 @@ var unselectFrame = function(num) {
 }
 
 var clickButtonAnimation = function(selector) {
-  $(selector).addClass("active");
-  setTimeout(function() {
-    $(selector).removeClass("active");
-  }, 100);
+  if(!($(selector).hasClass("disabled"))) {
+    $(selector).addClass("active");
+    setTimeout(function() {
+      $(selector).removeClass("active");
+    }, 100);
+  }
 }
 
 
@@ -1146,6 +1195,13 @@ $(document).ready(function() {
   }
 
   $("#highscore").html("highscore: " + highscore);
+
+  //tip cookie setting
+  if(getCookie("tips") === "") {
+    setCookie("tips", "0000", 99999);
+  } else {
+    seenTips = getCookie("tips");
+  }
 
   //creates all the frames with random times
   for(var i = 0; i < 16; i++) {
@@ -1212,7 +1268,7 @@ $(document).ready(function() {
       hoveredNum = parseInt($(this).parent().attr("id").charAt(5))*10
                     + parseInt($(this).parent().attr("id").charAt(6));
     }
-    selectFrame(hoveredNum);
+    selectFrame(hoveredNum, "hover");
   });
 
   $(".frame-inner").mouseleave(function() {
@@ -1249,6 +1305,10 @@ $(document).ready(function() {
   $("#customize-menu > div > input").click(function() {
     checkEnabledBoxes();
   });
+
+  $("#tip-close").click(function() {
+    destroyTip();
+  })
 
   //sorry about this mess
   //whenever the user clicks enter, prevent the default action of page reloading
@@ -1298,10 +1358,35 @@ $(document).ready(function() {
         clickButtonAnimation(".easy-button");
       }
     }
+    //'1' key, should press left button
+    if(e.which == 49) {
+      if($("#frame11").hasClass("selected")) {
+        submitBool("bool-true");
+        clickButtonAnimation("#bool-true");
+      }
+      else if($("#frame7").hasClass("selected")) {
+        submitButton("button-left");
+        clickButtonAnimation("#button-left");
+      }
+    }
+    //'2' key, shoud press right button
+    if(e.which == 50) {
+      if($("#frame11").hasClass("selected")) {
+        submitBool("bool-false");
+        clickButtonAnimation("#bool-false");
+      }
+      else if($("#frame7").hasClass("selected")) {
+        submitButton("button-right");
+        clickButtonAnimation("#button-right");
+      }
+    }
   });
   //.keypress ignores arrow keys :(
   $(document).keydown(function(e) {
     if(e.which == 37 || e.which == 38 || e.which == 39 || e.which == 40) {
+      for(i = 0; i < 16; i++) {
+        unselectFrame(i);
+      }
       selectDirection(e.which);
     }
     if(e.which == 13) {
@@ -1311,7 +1396,6 @@ $(document).ready(function() {
       }
       if (!allowed) return;
       allowed = false;
-      console.log("key down")
       if($("#frame12").hasClass("selected")) {
         $(".hold-button").addClass("active");
         pressHold();
@@ -1324,7 +1408,6 @@ $(document).ready(function() {
       }
       if (!upAllowed) return;
       upAllowed = false;
-      console.log("key up")
       if(e.which == 13) {
         if($(".hold-button").hasClass("active")) {
           releaseHold();
