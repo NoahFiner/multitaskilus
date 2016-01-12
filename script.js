@@ -146,14 +146,14 @@ var Frame = function(num, desc, extendDesc, time, active) {
       $("#frame" + this.num + " .frame-inner").addClass("success");
       setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("success");}, 100);
     }
-  }
+  };
   //should run if the task is done wrong. will remove 5 seconds and make the frame red.
   this.failure = function() {
     var that = this;
     this.time -= 5;
     $("#frame" + this.num + " .frame-inner").addClass("failure");
     setTimeout(function() {$("#frame" + that.num + " .frame-inner").removeClass("failure");}, 100);
-  }
+  };
   //occurs when the frame is the cause of the loss. animation takes 1s.
   this.epicFailure = function() {
     var that = this;
@@ -172,10 +172,10 @@ var Frame = function(num, desc, extendDesc, time, active) {
       }
     }
     setTimeout(function() {
-      $(".frame-inner").attr("style", "")
+      $(".frame-inner").attr("style", "");
       $(".frame-inner").removeClass("loss");
-    }, 2000)
-  }
+    }, 2000);
+  };
   this.enableCheckbox = function() {
     if(this.num != 0) {
       this.played = true;
@@ -186,8 +186,8 @@ var Frame = function(num, desc, extendDesc, time, active) {
         $("input[name='"+this.desc+"-c']").removeClass("unplayed");
       }
     }
-  }
-}
+  };
+};
 
 //triggers the pause menu.
 //if restartConfirm is true, then the pause menu will show an option to restart or cancel.
@@ -204,17 +204,17 @@ var pause = function(restartConfirm) {
     $(".paused").css("display", "none");
     $(".restart").css("display", "block");
   }
-}
+};
 
 //hides the paused menu
 var unpause = function() {
   paused = false;
   $("#paused-menu").removeClass("shown");
-}
+};
 
 var restartConfirm = function() {
   pause(true);
-}
+};
 
 //resets the game
 //timeTillMenu is the amount of time the user can see the board before the main
@@ -256,7 +256,7 @@ var lose = function(timeTillMenu) {
   clearInterval(timeInterval);
   $("input[name='easy-c']").attr("disabled", "disabled");
   $("input[name='easy-c']").prop("checked", "checked");
-}
+};
 
 //cookies yum
 var setCookie = function(name, val, exdays) {
@@ -264,7 +264,7 @@ var setCookie = function(name, val, exdays) {
   d.setTime(d.getTime() + (exdays*24*60*60*1000));
   var expires = "expires=" + d.toUTCString();
   document.cookie = "" + name + "=" + val + "; " + expires;
-}
+};
 
 var getCookie = function(name) {
   var findString = name + "=";
@@ -277,7 +277,7 @@ var getCookie = function(name) {
     }
   }
   return "";
-}
+};
 
 //sets the difficulty based on the value of #difficulty option:selected.
 //also checks all tasks being enabled and redisables the easy button task
@@ -311,8 +311,8 @@ var setDifficulty = function(resetCheckboxes) {
       difficultyTimeMultiplier = 0.8;
       break;
   }
-  $("#min-checkboxes").html(minimumEnabled)
-}
+  $("#min-checkboxes").html(minimumEnabled);
+};
 
 //initiates a new game
 var start = function() {
@@ -330,7 +330,7 @@ var start = function() {
   clearTimeout(easyButtonTimeout);
   easyButtonDisabled = false;
   $(".easy-reset-button").removeClass("disabled");
-  timeInterval = setInterval(function() {updateTimes()}, 10);
+  timeInterval = setInterval(function() {updateTimes();}, 10);
   shuffle();
   tasksTillNext = 100;
   for(var i = 0; i < 16; i++) {
@@ -355,9 +355,9 @@ var start = function() {
   $("#select-shower").css("left", (selectedLocation[1]*25) + "%");
   stickSelected = false;
   $("#current-score").html("0 tasks");
-  $("#current-points").html("0 points")
+  $("#current-points").html("0 points");
   $("#current-time").html("0 seconds");
-}
+};
 
 //sees how many checkboxes are unchecked.
 //if it's less than minimumEnabled (12 easy, 14 medium, 16 hard),
@@ -379,7 +379,7 @@ var checkEnabledBoxes = function() {
   }
   $("input[name='easy-c']").attr("disabled", "disabled");
   $("input[name='easy-c']").prop("checked", "checked");
-}
+};
 
 //resets the time of a frame, increases the score by 1, decreases tasksTillNext by 1.
 var resetTime = function(whichFrame) {
@@ -405,19 +405,19 @@ var resetTime = function(whichFrame) {
       tasksTillNext = 999;
     }
   }
-}
+};
 
 //resets every frame's time
 var resetAll = function() {
   for(var i = 0; i < 16; i++) {
     frames[i].resetTime();
   }
-}
+};
 
 //calls the specified frame's failure method, removes 5 seconds
 var removeTime = function(whichFrame) {
   frames[whichFrame].failure();
-}
+};
 
 //enables a frame if its checkbox is checked
 var enable = function(whichFrame) {
@@ -437,7 +437,7 @@ var enable = function(whichFrame) {
   else {
     setTimeout(function() {tasksTillNext = 1;}, 100);
   }
-}
+};
 
 //disables a frame
 var disable = function(whichFrame) {
@@ -445,7 +445,7 @@ var disable = function(whichFrame) {
   $("#frame" + whichFrame).addClass("disabled");
   $("#frame" + whichFrame).find("input").prop("disable", true);
   $("#frame" + whichFrame).find("input").attr("val", "");
-}
+};
 
 //updates all times. is called every 10ms by timeInterval
 //only functions if paused is false
@@ -455,7 +455,7 @@ var updateTimes = function() {
   if(!paused) {
     for(var i = 0; i < 16; i++) {
       if(frames[i].active) {
-        $("#frame" + i + " .timer-text").html(frames[i].time.toFixed(2))
+        $("#frame" + i + " .timer-text").html(frames[i].time.toFixed(2));
         frames[i].time -= 0.01;
         if(frames[i].time < 0) {
           frames[i].epicFailure();
@@ -473,7 +473,7 @@ var updateTimes = function() {
     totalTime += 0.01;
     $("#current-time").html(totalTime.toFixed(2) + " seconds");
   }
-}
+};
 
 //tests if the screen width to height ratio allows for the entire board to be
 //in view.
@@ -505,13 +505,13 @@ var testScreen = function() {
     $("#replay").removeClass("hidden");
     screenValid = true;
   }
-}
+};
 
 //replaces character in string at an index
 //used for tips
 String.prototype.replaceAt=function(index, character) {
     return this.substr(0, index) + character + this.substr(index+character.length);
-}
+};
 
 //finds the amount of times a value occurs in an array.
 //used for one of the tasks
@@ -533,7 +533,7 @@ function searchMultiArray(arr, val) {
     for(var j = 0; j < arr[i].length; j++) {
       if(arr[i][j] === val) {
         result = [i, j];
-        return result
+        return result;
       }
     }
   }
@@ -566,7 +566,7 @@ function shuffleArray(array) {
 //used for determining which checkboxes are active in customization
 String.prototype.replaceAt = function(index, character) {
     return this.substr(0, index) + character + this.substr(index+character.length);
-}
+};
 
 //generates a random string based on characters in an array of a specified len
 //used for copy and paste, character finding, and remembering tasks
@@ -576,7 +576,7 @@ var generateRandomString = function(len, array) {
     finalString += array[Math.floor(Math.random()*array.length)];
   }
   return finalString;
-}
+};
 
 //shuffles all frames in frameLocations[] and on #game-outer
 var shuffle = function() {
@@ -598,7 +598,7 @@ var shuffle = function() {
     $("#frame" + i).css("top", (row*25) + "%");
     $("#frame" + i).css("left", (column*25) + "%");
   }
-}
+};
 
 //copy and paste game
 var copyChars = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ1234567890-=!@#$%^&*()/?;|{}";
@@ -606,7 +606,7 @@ var currCopy;
 var chooseCopy = function() {
   currCopy = generateRandomString(10, copyChars);
   $("#copy-word").html(currCopy);
-}
+};
 var submitCopy = function() {
   var userCopy = $("input[name='copy-input']").val();
   $("input[name='copy-input']").val("");
@@ -616,7 +616,7 @@ var submitCopy = function() {
   } else {
     removeTime(10);
   }
-}
+};
 
 //type _ character game
 var places = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh",
@@ -628,7 +628,7 @@ var choosePlace = function() {
   var currPlacePosition = Math.floor(Math.random()*10);
   currPlace = currPlaceString[currPlacePosition];
   $("#place-place").html(places[currPlacePosition]);
-}
+};
 var submitPlace = function() {
   var userPlace = $("input[name='place-input']").val();
   $("input[name='place-input']").val("");
@@ -638,7 +638,7 @@ var submitPlace = function() {
   } else {
     removeTime(15);
   }
-}
+};
 
 
 //word game
@@ -646,7 +646,7 @@ var currWord;
 var chooseWord = function() {
   currWord = words[Math.floor(Math.random()*words.length)];
   $("#type-word").html(currWord);
-}
+};
 var submitWord = function() {
   var userWord = $("input[name='typing-input']").val();
   $("input[name='typing-input']").val("");
@@ -656,7 +656,7 @@ var submitWord = function() {
   } else {
     removeTime(1);
   }
-}
+};
 
 //backwards word game
 var currBword;
@@ -667,7 +667,7 @@ function reverse(s) {
 var chooseBword = function() {
   currBword = words[Math.floor(Math.random()*words.length)];
   $("#btype-word").html(currBword);
-}
+};
 var submitBword = function() {
   var userBword = $("input[name='btyping-input']").val();
   $("input[name='btyping-input']").val("");
@@ -677,7 +677,7 @@ var submitBword = function() {
   } else {
     removeTime(5);
   }
-}
+};
 
 //repeat game
 var currRepeat;
@@ -690,7 +690,7 @@ var chooseRepeat = function() {
   currRepeat = Array(repeatAmt + 1).join(repeatBase);
   $("#repeat-word").html(repeatBase);
   $("#repeat-times").html(repeatAmt);
-}
+};
 var submitRepeat = function() {
   var userRepeat = $("input[name='repeat-input']").val();
   $("input[name='repeat-input']").val("");
@@ -700,7 +700,7 @@ var submitRepeat = function() {
   } else {
     removeTime(8);
   }
-}
+};
 
 //color game
 var currColor;
@@ -718,7 +718,7 @@ var chooseColor = function() {
   } else {
     $("#color-lower").removeClass("no-outline");
   }
-}
+};
 var submitColor = function() {
   var userColor = $("input[name='color-input']").val();
   $("input[name='color-input']").val("");
@@ -728,16 +728,16 @@ var submitColor = function() {
   } else {
     removeTime(6);
   }
-}
+};
 
 //math
-var currAdd
+var currAdd;
 var chooseAddition = function() {
   var num1 = Math.floor(Math.random()*levels[currLevel].maxAdd*difficultyMultiplier);
   var num2 = Math.floor(Math.random()*levels[currLevel].maxAdd*difficultyMultiplier);
   currAdd = num1 + num2;
   $("#add-upper").html(num1 + " + " + num2);
-}
+};
 var submitAddition = function() {
   var userAdd = $("input[name='add-input']").val();
   $("input[name='add-input']").val("");
@@ -747,16 +747,16 @@ var submitAddition = function() {
   } else {
     removeTime(2);
   }
-}
+};
 
 //multitplacation game
-var currMult
+var currMult;
 var chooseMult = function() {
   var num1 = Math.floor(Math.random()*levels[currLevel].maxMult*difficultyMultiplier);
   var num2 = Math.floor(Math.random()*levels[currLevel].maxMult*difficultyMultiplier);
   currMult = num1 * num2;
   $("#mult-upper").html(num1 + " * " + num2);
-}
+};
 var submitMult = function() {
   var userMult = $("input[name='mult-input']").val();
   $("input[name='mult-input']").val("");
@@ -766,15 +766,15 @@ var submitMult = function() {
   } else {
     removeTime(3);
   }
-}
+};
 
 //n^2 game
-var currSqaure
+var currSqaure;
 var chooseSquare = function() {
   var num1 = Math.floor(Math.random()*levels[currLevel].maxMult*difficultyMultiplier);
   currSquare = num1 * num1;
   $("#square-upper").html(num1 + "<sup>2</sup>");
-}
+};
 var submitSquare = function() {
   var userSquare = $("input[name='square-input']").val();
   $("input[name='square-input']").val("");
@@ -784,16 +784,16 @@ var submitSquare = function() {
   } else {
     removeTime(13);
   }
-}
+};
 
 //logarithm game
-var currLog
+var currLog;
 var chooseLog = function() {
   var base = Math.floor(Math.random()*4 + 2);
   currLog = Math.floor(Math.random()*4 + 1);
   var ans = Math.pow(base, currLog);
   $("#log-upper").html("log<sub>" + base + "</sub>" + ans);
-}
+};
 var submitLog = function() {
   var userLog = $("input[name='log-input']").val();
   $("input[name='log-input']").val("");
@@ -803,15 +803,15 @@ var submitLog = function() {
   } else {
     removeTime(14);
   }
-}
+};
 
 //button game
 //currButton: "left" = left or buttonStates[0],
 //"right" = right or buttonStates[1]
 var randBoolean = function() {
   return (Math.random() < 0.5);
-}
-var currButton
+};
+var currButton;
 var buttonStates = ["left", "right"];
 var chooseButton = function() {
   currButton = buttonStates[Math.floor(Math.random()*2)];
@@ -827,7 +827,7 @@ var chooseButton = function() {
   } else {
     $("#button-t").html("Press the " + currButton + " button");
   }
-}
+};
 var submitButton = function(id) {
   userButton = id.substr(7, id.length - 6);
   if(userButton === currButton) {
@@ -836,10 +836,10 @@ var submitButton = function(id) {
   } else {
     removeTime(7);
   }
-}
+};
 
 //boolean game
-var currBool
+var currBool;
 var operations = ["<", ">"];
 var chooseBool = function() {
   var fracNum1 = randBoolean();
@@ -876,7 +876,7 @@ var chooseBool = function() {
       currBool = false;
     }
   }
-}
+};
 var submitBool = function(id) {
   userBool = id.substr(5, id.length - 3);
   if(userBool === currBool.toString()) {
@@ -885,7 +885,7 @@ var submitBool = function(id) {
   } else {
     removeTime(11);
   }
-}
+};
 
 //holding button game
 var holdTime = 5;
@@ -897,7 +897,7 @@ var chooseHold = function() {
   origHoldTime = (Math.random()*5 + 2.5).toFixed(2);
   holdTime = origHoldTime;
   $("#hold-amt").html(holdTime);
-}
+};
 var pressHold = function() {
   $(".hold-button").animate({
     backgroundColor: "#55dd55 !important"
@@ -909,11 +909,11 @@ var pressHold = function() {
     if(holdTime <= 0) {
       holdSuccess = true;
       resetTime(12);
-      clearInterval(holdInterval)
+      clearInterval(holdInterval);
       $("#hold-amt").html("0");
     }
   }, 10);
-}
+};
 var releaseHold = function() {
   $(".hold-button").stop();
   $(".hold-button").css("background-color", "#3333ff");
@@ -926,7 +926,7 @@ var releaseHold = function() {
     $("#hold-amt").html(origHoldTime);
     clearInterval(holdInterval);
   }
-}
+};
 
 //mashing button game
 var mashAmt = 20;
@@ -935,7 +935,7 @@ var chooseMash = function() {
   mashAmt = Math.floor(Math.random()*(levels[currLevel].mashMax - 10)*difficultyMultiplier) + 10;
   $("#mash-amt").html(mashAmt);
   $("#mash-times").html("times!");
-}
+};
 var pressMash = function() {
   mashAmt -= 1;
   if(mashAmt === 0) {
@@ -947,7 +947,7 @@ var pressMash = function() {
     $("#mash-times").html("times!");
   }
   $("#mash-amt").html(mashAmt);
-}
+};
 
 //remember game
 var currRemember, userRemember, rememberTime, rememberTimeUpdater;
@@ -971,7 +971,7 @@ var initRemember = function() {
       rememberSecondPhase();
     }
   }, 1000);
-}
+};
 //shows the input but hides the text to be remembered
 var rememberSecondPhase = function() {
   rememberPhase = 2;
@@ -979,7 +979,7 @@ var rememberSecondPhase = function() {
   $("#remember-lower").addClass("hidden");
   $("#remember-input").removeClass("hidden");
   clearInterval(rememberTimeUpdater);
-}
+};
 var submitRemember = function() {
   if(rememberPhase === 2) {
     userRemember = $("input[name='remember-input']").val();
@@ -991,7 +991,7 @@ var submitRemember = function() {
   } else {
     removeTime(4);
   }
-}
+};
 
 //easy button
 var easySelectedTimeout;
@@ -1005,7 +1005,7 @@ var clickEasyButton = function() {
       $(".easy-reset-button:not(.mash-button, .hold-button)").removeClass("disabled");
     }, 5000);
   }
-}
+};
 
 //played cookie setting
 if(getCookie("played") === "") {
@@ -1015,14 +1015,14 @@ if(getCookie("played") === "") {
 }
 
 var enableCheckboxesFromPF = function() {
-  playedFrames = playedFrames.replace(/=/g, "")
+  playedFrames = playedFrames.replace(/=/g, "");
   for(var i = 0; i < 16; i++) {
     var framePlayed = playedFrames[i];
     if(framePlayed === "1") {
       frames[i].enableCheckbox();
     }
   }
-}
+};
 
 
 //tips
@@ -1048,13 +1048,13 @@ var createTip = function(duration, tipNum) {
       destroyTip();
     }, duration);
   }
-}
+};
 
 var destroyTip = function() {
   clearTimeout(tipFadeTimeout);
   $("#tip-outer").removeClass("shown");
   tipActive = false;
-}
+};
 
 //arrow key assisted selecting stuff
 
@@ -1076,7 +1076,7 @@ var selectUp = function() {
   }
   selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
               "keyboard");
-}
+};
 
 //should do [+1, 0]
 var selectDown = function() {
@@ -1089,7 +1089,7 @@ var selectDown = function() {
   }
   selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
               "keyboard");
-}
+};
 
 //should do [0, -1]
 var selectLeft = function() {
@@ -1102,7 +1102,7 @@ var selectLeft = function() {
   }
   selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
               "keyboard");
-}
+};
 
 //should do [0, +1]
 var selectRight = function() {
@@ -1115,7 +1115,7 @@ var selectRight = function() {
   }
   selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
               "keyboard");
-}
+};
 
 var selectShowerFadeTimeout;
 var selectDirection = function(keycode) {
@@ -1143,7 +1143,7 @@ var selectDirection = function(keycode) {
   }, 1000);
   $("#select-shower").css("top", (selectedLocation[0]*25) + "%");
   $("#select-shower").css("left", (selectedLocation[1]*25) + "%");
-}
+};
 
 //way should be "mouse" or "keyboard"
 var selectFrame = function(num, way) {
@@ -1167,7 +1167,7 @@ var selectFrame = function(num, way) {
       createTip(5000, 2);
     }
   }
-}
+};
 
 var unselectFrame = function(num) {
   if(assistSelect) {
@@ -1178,7 +1178,7 @@ var unselectFrame = function(num) {
   for(i = 0; i < 16; i++) {
     frames[i].select = false;
   }
-}
+};
 
 var clickButtonAnimation = function(selector) {
   if(!($(selector).hasClass("disabled"))) {
@@ -1187,7 +1187,7 @@ var clickButtonAnimation = function(selector) {
       $(selector).removeClass("active");
     }, 100);
   }
-}
+};
 
 
 //keydown variable
@@ -1198,7 +1198,7 @@ window.onload = function() {
   $("#loading").removeClass("shown");
   //make sure the screen size works
   testScreen();
-}
+};
 
 var doubleButtonAllowed = true;
 
@@ -1261,7 +1261,7 @@ $(document).ready(function() {
 
   $(".mash-button").click(function() {
     pressMash();
-  })
+  });
 
   $(".hold-button").mousedown(function() {
     pressHold();
@@ -1328,7 +1328,7 @@ $(document).ready(function() {
 
   $("#tip-close").click(function() {
     destroyTip();
-  })
+  });
 
   //sorry about this mess
   //whenever the user clicks enter, prevent the default action of page reloading
@@ -1461,6 +1461,6 @@ $(document).ready(function() {
     $(document).focus(function(e) {
       allowed = true;
       upAllowed = false;
-    })
+    });
   });
 });
