@@ -389,6 +389,12 @@ input[type="checkbox"]:disabled + label {
   margin-top: 40vh;
 }
 
+#hide-warning {
+  bottom: 55vh;
+  left: 5vh;
+  position: absolute;
+}
+
 #score, #highscore, #points {
   top: auto !important;
   left: 50%;

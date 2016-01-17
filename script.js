@@ -24,6 +24,25 @@ var difficultyMultiplier = 1;
 var frameOrder = [];
 var difficultyTimeMultiplier = 1;
 var selectedFrame = 0;
+var ignoreWarnings = false;
+
+//checks if the user is on a mobile device
+//the game only works on desktop, unfortunately
+function detectMobile() {
+ if( navigator.userAgent.match(/Android/i)
+ || navigator.userAgent.match(/webOS/i)
+ || navigator.userAgent.match(/iPhone/i)
+ || navigator.userAgent.match(/iPad/i)
+ || navigator.userAgent.match(/iPod/i)
+ || navigator.userAgent.match(/BlackBerry/i)
+ || navigator.userAgent.match(/Windows Phone/i)
+ ){
+    return true;
+  }
+ else {
+    return false;
+  }
+}
 
 levels = [];
 var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repeatCharsMax, mashMax, tasksTillNextLvl, additionalTime) {
@@ -484,11 +503,11 @@ var screenValid = true;
 var testScreen = function() {
   var height = window.innerHeight;
   var width = window.innerWidth;
-  if(width <= height*1.42) {
+  if(width <= height*1.42 && ignoreWarnings === false) {
     if(!gameActive) {
-      //i was lazy so i plopped .warning into the loading screen
-      $(".warning, #loading").addClass("shown");
-      $("#replay").addClass("hidden");
+      //i was lazy so i plopped the warnings into the loading screen
+      $("#warning").html("your screen width is too small");
+      $("#size-warning, #loading, #warning, #hide-warning").addClass("shown");
       screenValid = false;
     }
   } else {
@@ -501,10 +520,26 @@ var testScreen = function() {
       $("#current-score, #current-time,"
       + "#restart-button, #current-points").css("display", "block");
     }
-    $(".warning, #loading").removeClass("shown");
-    $("#replay").removeClass("hidden");
+    $("#size-warning, #loading, #warning, #hide-warning").removeClass("shown");
     screenValid = true;
   }
+};
+
+var testMobile = function() {
+  //game can only be played on desktop
+  if(detectMobile() && ignoreWarnings === false) {
+    if(!gameActive) {
+      $("#warning").html("multitaskilus is not mobile friendly");
+      $(".warning, #loading, #hide-warning").addClass("shown");
+      $("#size-warning").removeClass("shown");
+    }
+  }
+};
+
+var hideWarning = function() {
+  $(".warning, #loading").removeClass("shown");
+  ignoreWarnings = true;
+  $("html").css("overflow-x", "scroll");
 };
 
 //replaces character in string at an index
@@ -517,7 +552,7 @@ String.prototype.replaceAt=function(index, character) {
 //used for one of the tasks
 function findOccurrences(arr, val) {
   var e, j, count = 0;
-  for (e = 0, j = arr.length; e < j; e++) {
+  for (var e = 0, j = arr.length; e < j; e++) {
     (arr[e] === val) && count++;
   }
   return count;
@@ -683,7 +718,7 @@ var submitBword = function() {
 var currRepeat;
 var chooseRepeat = function() {
   var repeatBase = "";
-  for(i = 0; i < levels[currLevel].repeatCharsMax; i++) {
+  for(var i = 0; i < levels[currLevel].repeatCharsMax; i++) {
     repeatBase += chars[Math.floor(Math.random()*chars.length)];
   }
   var repeatAmt = Math.floor(Math.random()*(levels[currLevel].repeatMax - 5) + 5);
@@ -1068,7 +1103,7 @@ var stickSelected = false;
 //should do [-1, 0]
 var selectUp = function() {
   if(selectedLocation[0] > 0) {
-    for(i = 0; i < 16; i++) {
+    for(var i = 0; i < 16; i++) {
       unselectFrame(i);
       $("input").blur();
     }
@@ -1081,7 +1116,7 @@ var selectUp = function() {
 //should do [+1, 0]
 var selectDown = function() {
   if(selectedLocation[0] < 3) {
-    for(i = 0; i < 16; i++) {
+    for(var i = 0; i < 16; i++) {
       unselectFrame(i);
       $("input").blur();
     }
@@ -1094,7 +1129,7 @@ var selectDown = function() {
 //should do [0, -1]
 var selectLeft = function() {
   if(selectedLocation[1] > 0) {
-    for(i = 0; i < 16; i++) {
+    for(var i = 0; i < 16; i++) {
       unselectFrame(i);
       $("input").blur();
     }
@@ -1107,7 +1142,7 @@ var selectLeft = function() {
 //should do [0, +1]
 var selectRight = function() {
   if(selectedLocation[1] < 3) {
-    for(i = 0; i < 16; i++) {
+    for(var i = 0; i < 16; i++) {
       unselectFrame(i);
       $("input").blur();
     }
@@ -1148,7 +1183,7 @@ var selectDirection = function(keycode) {
 //way should be "mouse" or "keyboard"
 var selectFrame = function(num, way) {
   if(assistSelect && frames[num].active === true) {
-    for(i = 0; i < 16; i++) {
+    for(var i = 0; i < 16; i++) {
       unselectFrame(i);
     }
     $("input").blur();
@@ -1175,7 +1210,7 @@ var unselectFrame = function(num) {
     $(".frame").removeClass("selected");
     $("#frame" + num).children("input").blur();
   }
-  for(i = 0; i < 16; i++) {
+  for(var i = 0; i < 16; i++) {
     frames[i].select = false;
   }
 };
@@ -1198,6 +1233,8 @@ window.onload = function() {
   $("#loading").removeClass("shown");
   //make sure the screen size works
   testScreen();
+  //you better not be playing on mobile
+  testMobile();
 };
 
 var doubleButtonAllowed = true;
@@ -1230,21 +1267,23 @@ $(document).ready(function() {
   }
   //gives each frame a timer
   for(var i = 0; i < 16; i++) {
-    $("#frame" + i + " > .frame-inner").append("<div class='timer' id='timer" + i
-                                            + "'><h1 class='timer-text'>30</h1>"
-                                            + "</div>");
+    $("#frame" + i + " > .frame-inner")
+                    .append("<div class='timer' id='timer" + i
+                            + "'><h1 class='timer-text'>30</h1>"
+                            + "</div>");
   }
 
   //replay is the play button at first
   $("#replay").click(function() {
-    if(screenValid) {
-      start();
-    }
+    start();
   });
 
   //test the screen size whenever the window is resized
   $(window).resize(function() {
     testScreen();
+
+    //you better not be rotating on mobile
+    testMobile();
   });
 
   //.button-game is the left/right button. submitButton handles everything with
