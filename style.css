@@ -380,7 +380,7 @@ input[type="checkbox"]:disabled + label {
   pointer-events: none !important;
 }
 
-.warning.shown {
+.warning.shown, #hide-warning.shown {
   opacity: 1 !important;
 }
 
@@ -392,6 +392,7 @@ input[type="checkbox"]:disabled + label {
 #hide-warning {
   bottom: 55vh;
   left: 5vh;
+  opacity: 0;
   position: absolute;
 }
 
