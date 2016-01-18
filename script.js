@@ -10,7 +10,7 @@ var tasksTillNext = 100;
 var assistSelect = false;
 var easyButtonDisabled = false;
 var paused = false;
-var easyButtonTimeout;
+var easyButtonTimeout, idkTimeout;
 var difficulty = "medium";
 var words;
 var easyWords = ["ball", "bat", "bed", "book", "boy", "bun", "can", "cake", "cap", "car", "cat", "cow", "cub", "cup", "dad", "day", "dog", "doll", "dust", "fan", "feet", "girl", "gun", "hall", "hat", "hen", "jar", "kite", "man", "map", "men", "mom", "pan", "pet", "pie", "pig", "pot", "rat", "son", "sun", "toe", "tub", "van", "apple", "arm", "banana", "bike", "bird", "book", "chin", "clam", "class", "clover", "club", "corn", "crayon", "crow", "crown", "crowd", "crib", "desk", "dime", "dirt", "dress", "fang", "field", "flag", "flower", "fog", "game", "heat", "hill", "home", "horn", "hose", "joke", "juice", "kite", "lake", "maid", "mask", "mice", "milk", "mint", "meal", "meat", "moon", "mother", "morning", "name", "nest", "nose", "pear", "pen", "pencil", "plant", "rain", "river", "road", "rock", "room", "rose", "seed", "shape", "shoe", "shop", "show", "sink", "snail", "snake", "snow", "soda", "sofa", "star", "step", "stew", "stove", "straw", "string", "summer", "swing", "table", "tank", "team", "tent", "test", "toes", "tree", "vest", "water", "wing", "winter", "woman", "women"];
@@ -25,6 +25,7 @@ var frameOrder = [];
 var difficultyTimeMultiplier = 1;
 var selectedFrame = 0;
 var ignoreWarnings = false;
+var activeFrames = [0];
 
 //checks if the user is on a mobile device
 //the game only works on desktop, unfortunately
@@ -62,6 +63,7 @@ var Level = function(num, enabled, rememberAmt, maxAdd, maxMult, repeatMax, repe
   this.activate = function() {
     for(var i = 0; i < enabled.length; i++) {
       enable(enabled[i]);
+      activeFrames.push(enabled[i]);
     }
     for(var i = 0; i < 16; i++) {
       frames[i].origTime += additionalTime*difficultyTimeMultiplier;
@@ -364,6 +366,7 @@ var start = function() {
   totalTime = 0;
   level = 0;
   selectedFrame = 0;
+  activeFrames = [0];
   levels[0].activate();
   activeLocations = [[0, 0, 0, 0],
                      [0, 0, 0, 0],
@@ -471,6 +474,7 @@ var disable = function(whichFrame) {
 //if a time is 0, then the game is lost
 //also adds classes to frames based on their times
 var updateTimes = function() {
+  $(".idk").removeClass("shown");
   if(!paused) {
     for(var i = 0; i < 16; i++) {
       if(frames[i].active) {
@@ -481,7 +485,9 @@ var updateTimes = function() {
           lose(2000);
         } else if(frames[i].time < 5) {
           $("#frame" + i).addClass("urgent2");
+          $("#idk-" + i).addClass("shown");
         } else if(frames[i].time < 10) {
+          $("#idk-" + i).addClass("shown");
           $("#frame" + i).removeClass("urgent2");
           $("#frame" + i).addClass("urgent1");
         } else {
@@ -995,7 +1001,7 @@ var initRemember = function() {
   currRemember = generateRandomString(levels[currLevel].rememberAmt, chars);
   $("#remember-upper").html("Remember: " + currRemember);
   $("#remember-lower").removeClass("hidden");
-  $("#remember-input").addClass("hidden");
+  $("#remember-input, #remember-idk").addClass("hidden");
   clearInterval(rememberTimeUpdater);
   $("#remember-time").html("5s");
   rememberTime = 5;
@@ -1012,7 +1018,7 @@ var rememberSecondPhase = function() {
   rememberPhase = 2;
   $("#remember-upper").html("Type it in!");
   $("#remember-lower").addClass("hidden");
-  $("#remember-input").removeClass("hidden");
+  $("#remember-input, #remember-idk").removeClass("hidden");
   clearInterval(rememberTimeUpdater);
 };
 var submitRemember = function() {
@@ -1025,6 +1031,33 @@ var submitRemember = function() {
     initRemember();
   } else {
     removeTime(4);
+  }
+};
+
+var giveUp = function(whichFrame) {
+  //giving up this remembering can really crush you
+  amtOfPunishment = Math.floor(Math.random()*3);
+  $(".idk").addClass("disabled");
+  clearTimeout(idkTimeout);
+  idkTimeout = setTimeout(function() {
+    $(".idk").removeClass("disabled");
+  }, 5000);
+  var tries = 100;
+  for(i = 0; i <= amtOfPunishment + 1; i++) {
+    resetTime(whichFrame);
+    initRemember();
+    var punishedFrame = frames[activeFrames[Math.floor(Math.random()*activeFrames.length)]];
+    while(punishedFrame.num === whichFrame  // no resetting the giving up frame time
+          && punishedFrame.active === false // no inactive frames
+          && punishedFrame.time <= 5) {     // we can't add any time for a punishment!
+      punishedFrame = frames[activeFrames[Math.floor(Math.random()*activeFrames.length)]];
+      tries -= 1; //no infinite loops
+      if(tries === 0) {
+        punishedFrame.time = 5;
+        break;
+      }
+    }
+    punishedFrame.time = 5;
   }
 };
 
@@ -1264,6 +1297,9 @@ $(document).ready(function() {
   for(var i = 0; i < 16; i++) {
     frames[i] = new Frame(i, names[i], moreNames[i],
           (Math.floor(Math.random()*20 + 10)*difficultyTimeMultiplier), false);
+      //append an idk button to each frame
+      $("#frame" + i + " > .frame-inner")
+              .append("<div class='button idk' id='idk-" + i + "'>?</div>");
   }
   //gives each frame a timer
   for(var i = 0; i < 16; i++) {
@@ -1367,6 +1403,12 @@ $(document).ready(function() {
 
   $("#tip-close").click(function() {
     destroyTip();
+  });
+
+  //remember giving up button
+  $(".idk").click(function() {
+    var giveUpID = $(this).attr("id");
+    giveUp(giveUpID.charAt(4));
   });
 
   //sorry about this mess

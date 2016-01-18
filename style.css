@@ -670,7 +670,8 @@ input[type="checkbox"]:disabled + label {
   -webkit-transition: background-color 1ms, transform 0.25s, -webkit-transform 0.25s;
 }
 
-.frame.nopress .button, .frame.nopress .button-game {
+.frame.nopress .button:not(.idk),
+.frame.nopress .button-game:not(.idk) {
   opacity: 0.5 !important;
   transform: scale(0.8) !important;
   -webkit-transform: scale(0.8) !important;
@@ -1094,7 +1095,7 @@ sup, sub {
   right: 4vh;
 }
 
-#frame11 > .frame-inner > .button {
+#frame11 > .frame-inner > .button:not(.idk) {
   position: absolute;
   top: 15vh;
   font-size: 3.5vh;
@@ -1121,4 +1122,31 @@ sup, sub {
 #bool-title {
   top: 5vh;
   font-size: 5vh;
+}
+
+.idk {
+  font-size: 2vh !important;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-weight: 900 !important;
+  background-color: #c04341 !important;
+  bottom: 1vh !important;
+  left: 1vh !important;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+}
+
+.idk.disabled {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.idk.shown {
+  opacity: 1;
+  pointer-events: auto;
 }
