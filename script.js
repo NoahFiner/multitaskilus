@@ -156,7 +156,6 @@ var Frame = function(num, desc, extendDesc, time, active) {
   this.active = active;
   this.select = false;
   this.played = false;
-  this.position = [0, 0];
   if(this.active === false) {
     $("#frame" + this.num).addClass("disabled");
   }
@@ -443,8 +442,8 @@ var removeTime = function(whichFrame) {
 
 //enables a frame if its checkbox is checked
 var enable = function(whichFrame) {
-  activeLocations[frames[whichFrame].position[0],
-                  frames[whichFrame].position[1]] = 1;
+  activeLocations[frames[whichFrame].position[0]]
+                 [frames[whichFrame].position[1]] = 1;
   var currName = frames[whichFrame].desc;
   if($("input[name='" + currName + "-c']").is(":checked")) {
     frames[whichFrame].active = true;
@@ -947,7 +946,7 @@ var pressHold = function() {
     holdTime -= 0.01;
     holdTime = holdTime.toFixed(2);
     $("#hold-amt").html(holdTime);
-    if(holdTime <= 0) {
+    if(holdTime <= 0 || holdSuccess) {
       holdSuccess = true;
       resetTime(12);
       clearInterval(holdInterval);
@@ -956,6 +955,7 @@ var pressHold = function() {
   }, 10);
 };
 var releaseHold = function() {
+  clearInterval(holdInterval);
   $(".hold-button").stop();
   $(".hold-button").css("background-color", "#3333ff");
   if(holdSuccess) {
@@ -965,7 +965,6 @@ var releaseHold = function() {
     removeTime(12);
     holdTime = origHoldTime;
     $("#hold-amt").html(origHoldTime);
-    clearInterval(holdInterval);
   }
 };
 
@@ -1186,7 +1185,10 @@ var selectRight = function() {
 };
 
 var selectShowerFadeTimeout;
-var selectDirection = function(keycode) {
+
+//resetShower = true makes the select shower's opacity 1 and resets the fade
+//otherwise it just updates the position
+var selectDirection = function(keycode, resetShower) {
   switch(keycode) {
     case 38:
       selectUp();
@@ -1200,15 +1202,20 @@ var selectDirection = function(keycode) {
     case 39:
       selectRight();
       break;
+    default:
+      selectFrame(frameLocations[selectedLocation[0]][selectedLocation[1]],
+                  "keyboard");
   }
-  $("#select-shower").stop();
-  $("#select-shower").css("opacity", "1");
-  clearTimeout(selectShowerFadeTimeout);
-  selectShowerFadeTimeout = setTimeout(function() {
-    $("#select-shower").animate({
-      opacity: 0
-    }, 1000, "linear");
-  }, 1000);
+  if(resetShower) {
+    $("#select-shower").stop();
+    $("#select-shower").css("opacity", "1");
+    clearTimeout(selectShowerFadeTimeout);
+    selectShowerFadeTimeout = setTimeout(function() {
+      $("#select-shower").animate({
+        opacity: 0
+      }, 1000, "linear");
+    }, 1000);
+  }
   $("#select-shower").css("top", (selectedLocation[0]*25) + "%");
   $("#select-shower").css("left", (selectedLocation[1]*25) + "%");
 };
@@ -1511,7 +1518,7 @@ $(document).ready(function() {
   //.keypress ignores arrow keys :(
   $(document).keydown(function(e) {
     if(e.which == 37 || e.which == 38 || e.which == 39 || e.which == 40) {
-      selectDirection(e.which);
+      selectDirection(e.which, true);
     }
     if(e.which == 13) {
       upAllowed = true;
