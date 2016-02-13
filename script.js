@@ -946,7 +946,7 @@ var pressHold = function() {
     holdTime -= 0.01;
     holdTime = holdTime.toFixed(2);
     $("#hold-amt").html(holdTime);
-    if(holdTime <= 0 || holdSuccess) {
+    if(holdTime <= 0 || holdSuccess === true) {
       holdSuccess = true;
       resetTime(12);
       clearInterval(holdInterval);
@@ -976,7 +976,9 @@ var chooseMash = function() {
   $("#mash-amt").html(mashAmt);
   $("#mash-times").html("times!");
 };
-var pressMash = function() {
+
+//type should be 'keyboard' or 'click' for keyboard timeout
+var pressMash = function(type) {
   mashAmt -= 1;
   if(mashAmt === 0) {
     resetTime(9);
@@ -1342,7 +1344,7 @@ $(document).ready(function() {
   });
 
   $(".mash-button").click(function() {
-    pressMash();
+    pressMash("click");
   });
 
   $(".hold-button").mousedown(function() {
@@ -1457,10 +1459,6 @@ $(document).ready(function() {
       else if($("input[name='place-input']").is(":focus")) {
         submitPlace();
       }
-      else if($("#frame9").hasClass("selected")) {
-        pressMash();
-        clickButtonAnimation(".mash-button");
-      }
       else if($("#frame0").hasClass("selected")) {
         clickEasyButton();
         clickButtonAnimation(".easy-button");
@@ -1531,6 +1529,9 @@ $(document).ready(function() {
         $(".hold-button").addClass("active");
         pressHold();
       }
+      else if ($("#frame9").hasClass("selected")) {
+        $(".mash-button").addClass("active");
+      }
     }
     $(document).keyup(function(e) {
       allowed = true;
@@ -1540,9 +1541,13 @@ $(document).ready(function() {
       if (!upAllowed) return;
       upAllowed = false;
       if(e.which == 13) {
-        if($(".hold-button").hasClass("active")) {
+        if($("#frame12").hasClass("selected")) {
           releaseHold();
           $(".hold-button").removeClass("active");
+        }
+        else if($("#frame9").hasClass("selected")) {
+          $(".mash-button").removeClass("active")
+          pressMash("keyboard");
         }
       }
     });
